@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem; // <--- TOTO je to nové a dùležité!
 
 public class AlexandraScript : MonoBehaviour
 {
@@ -13,6 +14,19 @@ public class AlexandraScript : MonoBehaviour
 
     public GameObject windowUI;
 
+    private Collider2D myCollider;
+
+    private void Awake()
+    {
+        // Zajistíme, že máme Collider2D
+        myCollider = GetComponent<Collider2D>();
+        if (myCollider == null)
+        {
+            // Tuhle chybu neignoruj! Collider2D je potøeba!
+            Debug.LogError("Chyba! AlexandraScript potøebuje Collider2D komponentu pro detekci kliku. Pøidej ji ve scénì!");
+        }
+    }
+
     private void Start()
     {
         if (windowUI != null)
@@ -21,8 +35,29 @@ public class AlexandraScript : MonoBehaviour
         StartCoroutine(MoveRoutine());
     }
 
+    // OPRAVENÁ FUNKCE: Používá nový Input System k detekci kliku na Collider
+    private void Update()
+    {
+        // 1. Zkontrolujeme, jestli se levé tlaèítko stisklo V TOMTO FRAMU
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            // 2. Získání pozice myši ze systému Input System (Screen souøadnice)
+            Vector2 clickPosition = Mouse.current.position.ReadValue();
+
+            // 3. Konverze Screen souøadnic na World souøadnice (pro 2D Collider)
+            Vector3 worldClickPosition = Camera.main.ScreenToWorldPoint(clickPosition);
+
+            // 4. Kontrola, jestli klik spadá do Collideru 2D
+            if (myCollider != null && myCollider.OverlapPoint(worldClickPosition))
+            {
+                HandlePlayerClick();
+            }
+        }
+    }
+
     IEnumerator MoveRoutine()
     {
+        // Zbytek tvého kódu pro pohyb Alexandry, beze zmìny
         while (true)
         {
             yield return new WaitForSeconds(moveInterval);
@@ -43,6 +78,7 @@ public class AlexandraScript : MonoBehaviour
 
     IEnumerator ProgressRoutine()
     {
+        // Zbytek tvého kódu pro progres, beze zmìny
         isProgressing = true;
         progress = 0;
 
@@ -71,9 +107,10 @@ public class AlexandraScript : MonoBehaviour
             windowUI.SetActive(false);
     }
 
-    private void OnMouseDown()
+    // Logika, která se spustí po kliknutí
+    private void HandlePlayerClick()
     {
-        Debug.Log($"{enemyName}: Progress stopped by player.");
+        Debug.Log($"{enemyName}: Progress stopped by player. (KLIK ZAREGISTROVÁN)");
         isProgressing = false;
         progress = 0;
 
