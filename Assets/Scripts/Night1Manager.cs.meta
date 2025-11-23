@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 969c59a88c9a28440be3d59a98d8c839
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - alexandra: {fileID: 4876344734279232715, guid: f18b4bb2d7b40124bac0a6c456bbb0f4, type: 3}
+  - screenFader: {fileID: 8399352201351632602, guid: 7ac1de3e47a2d2b4ca1e5a97035558b8, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
