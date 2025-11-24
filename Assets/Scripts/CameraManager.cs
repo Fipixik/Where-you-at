@@ -10,10 +10,14 @@ public class CameraManager : MonoBehaviour
 
     public int currentCameraID = 1;
 
-    // TOTO JE NOVÉ: Reference pro Lin
+    // LIN TRACKING FIELDS
     [Header("Enemy Tracking")]
-    public LinScript linEnemy;             // Sem pøijde Lin GameObject
-    public GameObject linSpriteOnCamera;     // Sem pøijde VIZUÁL Lin na kameru (schovaný!)
+    public LinScript linEnemy;
+    public GameObject linSpriteOnCamera;
+
+    // TOTO JE NOVÉ POLE: Pole pro tvých 5 Colliderù
+    [Header("External Controls")]
+    public GameObject[] cameraHotspots; // <-- POLE PRO 5 COLLIDER TRIGGER OBJEKTÙ
 
     private void Start()
     {
@@ -25,6 +29,8 @@ public class CameraManager : MonoBehaviour
         if (linSpriteOnCamera != null)
             linSpriteOnCamera.SetActive(false);
 
+        // NOVÉ: ZDE SE HOTSPOTY VYPNOU PØI STARTU!
+        ToggleHotspots(false);
         UpdateCameraView();
     }
 
@@ -43,11 +49,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Zobrazí pouze aktuálnì vybranou kameru a Lin, pokud je v dané pozici.
-    /// Zmìnìno na PUBLIC, aby ji mohl volat LinScript po pohybu!
-    /// </summary>
-    public void UpdateCameraView() // <-- ZMÌNÌNO NA PUBLIC
+    public void UpdateCameraView()
     {
         // 1. Pøepínání 5 vizuálù kamery
         for (int i = 0; i < cameraViews.Length; i++)
@@ -75,18 +77,30 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Zavolá se z CameraHoverZone (ZVEDÁ MONITOR).
+    /// </summary>
     public void ActivateMonitor()
     {
         if (cameraDisplayPanel != null)
             cameraDisplayPanel.SetActive(true);
 
+        // NOVÉ: ZAPNI COLLIDEROVÉ HOTSPOTY!
+        ToggleHotspots(true);
+
         UpdateCameraView();
     }
 
+    /// <summary>
+    /// Zavolá se z CameraHoverZone (SKLÁPÍ MONITOR).
+    /// </summary>
     public void DeactivateMonitor()
     {
         if (cameraDisplayPanel != null)
             cameraDisplayPanel.SetActive(false);
+
+        // NOVÉ: VYPNOUT COLLIDEROVÉ HOTSPOTY!
+        ToggleHotspots(false);
 
         if (linSpriteOnCamera != null)
             linSpriteOnCamera.SetActive(false);
@@ -95,6 +109,23 @@ public class CameraManager : MonoBehaviour
         {
             if (view != null)
                 view.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// TATO NOVÁ FUNKCE ØEŠÍ ZAPÍNÁNÍ/VYPÍNÁNÍ TLAÈÍTEK
+    /// </summary>
+    private void ToggleHotspots(bool active)
+    {
+        if (cameraHotspots == null) return;
+
+        foreach (GameObject hotspot in cameraHotspots)
+        {
+            if (hotspot != null)
+            {
+                // Vypínáme/zapínáme celý GameObject (Collider i SpriteRenderer pro hover)
+                hotspot.SetActive(active);
+            }
         }
     }
 }
