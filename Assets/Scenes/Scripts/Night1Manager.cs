@@ -5,10 +5,11 @@ using System.Collections;
 public class Night1Manager : MonoBehaviour
 {
     [Header("Night Settings")]
-    public float nightDuration = 10f; // délka noci v sekundách
+    public float nightDuration = 10f;
 
     [Header("Enemy References")]
-    public AlexandraScript alexandra; // nepøítel Alexandra
+    public AlexandraScript alexandra; // <-- PØIØAÏ: Objekt Alexandry
+    public LinScript lin; // <-- PØIØAÏ: Objekt Lin
 
     [Header("Screen Fader")]
     public ScreenFader screenFader;
@@ -19,26 +20,35 @@ public class Night1Manager : MonoBehaviour
     [Header("Fade Settings")]
     public float fadeDuration = 2f;
 
+    // ZDE BYL SLOT PRO VIDEO PLAYER
+
     void Awake()
     {
-        // Registrace callbacku pro naètení scény
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void OnDestroy()
     {
-        // Odregistrace callbacku
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void Start()
     {
+        // NASTAVENÍ OBTÍŽNOSTI PRO NOC 1
         if (alexandra != null)
         {
-            // Parametry pro Night 1
-            alexandra.moveChance = 50;       // šance, že se pohne
-            alexandra.moveInterval = 1f;   // interval mezi pohyby
-            alexandra.killProgress = 100;    // kolik je potøeba progressu pro zabití
+            // Pùvodní parametry pro Noc 1: Alexandra
+            alexandra.moveChance = 50;
+            alexandra.moveInterval = 1f;
+            alexandra.killProgress = 100;
+        }
+
+        if (lin != null)
+        {
+            // Parametry pro Noc 1: Lin (PØEPISUJÍ HODNOTY V INSPECTORU!)
+            lin.moveChance = 20;
+            lin.moveInterval = 7f;
+            lin.killTimerDuration = 4f;
         }
 
         Debug.Log("Night 1 started!");
@@ -47,10 +57,9 @@ public class Night1Manager : MonoBehaviour
 
     private IEnumerator RunNight()
     {
-        // èeká, dokud noc neskonèí
         yield return new WaitForSeconds(nightDuration);
 
-        // fade do èerna
+        // WIN SEQUENCE
         if (screenFader != null)
         {
             screenFader.fadeDuration = fadeDuration;
@@ -58,35 +67,33 @@ public class Night1Manager : MonoBehaviour
         }
 
         Debug.Log("Night 1 ended! Loading Menu...");
-
-        // uloží, že noc skonèila
         PlayerPrefs.SetInt("CurrentNight", 1);
         PlayerPrefs.Save();
-
-        // naète menu
         SceneManager.LoadScene(menuSceneName);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // reset fade po naètení menu
         if (scene.name == menuSceneName && screenFader != null)
             screenFader.ResetFade();
     }
 
-    // Volitelná metoda pro test v editoru
-    public void FinishNight()
+    // FINAL GAME OVER FUNKCE: Spustí se po jumpscare!
+    public void GameOver(string killerName)
     {
-        StartCoroutine(GoToMenu());
+        Debug.Log($"GAME OVER! Zabita: {killerName}. Spouštím návrat do menu.");
+        // Jdeme rovnou na fade
+        StartCoroutine(EndGameTransition());
     }
 
-    private IEnumerator GoToMenu()
+    private IEnumerator EndGameTransition()
     {
+        // Rychlý fade (bez èekání na video)
         if (screenFader != null)
+        {
+            screenFader.fadeDuration = 0.5f;
             yield return StartCoroutine(screenFader.FadeToBlackAndWait());
-
-        PlayerPrefs.SetInt("CurrentNight", 1);
-        PlayerPrefs.Save();
+        }
 
         SceneManager.LoadScene(menuSceneName);
     }

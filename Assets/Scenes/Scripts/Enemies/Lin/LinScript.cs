@@ -11,15 +11,17 @@ public class LinScript : MonoBehaviour
     public int finalKillPosition = 6;
 
     [Header("Kill Settings")]
-    public float killTimerDuration = 3f;     // TOTO JE TEÏ PEVNÁ DOBA ÈEKÁNÍ
+    public float killTimerDuration = 3f;
 
     [Header("Visuals")]
     public GameObject windowUI;
 
-    // TOTO JE NOVÉ: Externí Reference
+    // EXTERNAL REFERENCES
     [Header("External References")]
     public CameraManager cameraManager;
-    public HoldDoorLock doorLock;           // <-- NOVÁ REFERENCE: Pro kontrolu stavu dveøí
+    public HoldDoorLock doorLock;           // <-- ZDE PØIØAÏ GAMEOBJECT S HoldDoorLock.cs
+    [Header("Game Manager")]
+    public Night1Manager nightManager; // <-- ZDE PØIØAÏ Night1Manager
 
     // Interné stavy
     public int currentPosition = 0;
@@ -49,13 +51,12 @@ public class LinScript : MonoBehaviour
                 continue;
             }
 
-            // 1. Roll: Šance, že se Lin pohne (zùstává beze zmìny)
+            // 1. Roll a 2. Roll logika (zùstává nezmìnìna)
             if (Random.Range(0, 100) < moveChance)
             {
                 int nextPos = currentPosition;
                 int pathRoll = Random.Range(0, 100);
 
-                // 2. Roll: ROZHODOVÁNÍ O CESTÌ (Tvé pravidla)
                 switch (currentPosition)
                 {
                     case 0: nextPos = (pathRoll < 50) ? 1 : 3; break;
@@ -86,7 +87,6 @@ public class LinScript : MonoBehaviour
             }
         }
 
-        // Lin dosáhla finální pozice
         Debug.Log($"{enemyName}: Dosažená pozícia {finalKillPosition}. Spouštím kill timer.");
         moveCoroutine = null;
         killCoroutine = StartCoroutine(KillRoutine());
@@ -99,25 +99,21 @@ public class LinScript : MonoBehaviour
 
         if (windowUI != null) windowUI.SetActive(true);
 
-        // ZMÌNA: Pevnì èekáme X sekund. Bìhem této doby má hráè èas zavøít dveøe.
         Debug.Log($"Lin èeká {killTimerDuration}s na reakci hráèe.");
         yield return new WaitForSeconds(killTimerDuration);
 
-        // TOTO JE HLAVNÍ KONTROLA PO VYPRŠENÍ ÈASU
-        if (isAwaitingKill) // Kontrolujeme, zda Lin nebyla zablokována v prùbìhu èekání (kliknutím na dveøe)
+        if (isAwaitingKill)
         {
-            // ZMÌNA: KONTROLA STAVU DVEØÍ AŽ NA KONCI
+            // Kontrola dveøí po èekání
             if (doorLock != null && doorLock.isDoorClosed)
             {
                 // Dveøe jsou zavøené -> Lin utíká
                 Debug.Log("Lin: Èekání vypršelo. Dveøe ZAVØENÉ. Utíkám z P6.");
 
-                // Znovu spustíme logiku útìku
                 isAwaitingKill = false;
                 isBlockedByPlayer = true;
                 currentPosition = 1;
 
-                // Obnovíme pohybový cyklus
                 if (moveCoroutine == null)
                 {
                     moveCoroutine = StartCoroutine(MoveRoutine());
@@ -127,7 +123,12 @@ public class LinScript : MonoBehaviour
             {
                 // Dveøe jsou otevøené -> Jumpscare
                 Debug.Log($"{enemyName}: JUMPSCARE! Dveøe OTEVØENÉ po vypršení èasu.");
-                // Logika pro GAME OVER
+
+                // VOLÁNÍ GAME OVER
+                if (nightManager != null)
+                {
+                    nightManager.GameOver(enemyName);
+                }
             }
         }
 
@@ -137,12 +138,10 @@ public class LinScript : MonoBehaviour
         killCoroutine = null;
     }
 
-    // ZAVOLÁNO Z HoldDoorLock.cs, když hráè ZAVØE dveøe (pøed vypršením èasu)
     public void StopKillRoutine()
     {
         if (isAwaitingKill)
         {
-            // OKAMŽITÉ ZASTAVENÍ TIMERU!
             if (killCoroutine != null)
             {
                 StopCoroutine(killCoroutine);
@@ -154,7 +153,6 @@ public class LinScript : MonoBehaviour
             isBlockedByPlayer = true;
             currentPosition = 1;
 
-            // Obnovíme pohybovou rutinu (aby Lin stála zamrzlá na P1)
             if (moveCoroutine == null)
             {
                 moveCoroutine = StartCoroutine(MoveRoutine());
@@ -167,7 +165,6 @@ public class LinScript : MonoBehaviour
         }
     }
 
-    // ZAVOLÁNO Z HoldDoorLock.cs, když hráè OTEVØE dveøe
     public void Unblock()
     {
         if (isBlockedByPlayer)

@@ -1410,7 +1410,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NightManager
   nightDuration: 60
   alexandra: {fileID: 4876344735423153121}
-  lin: {fileID: 1168731561}
   screenFader: {fileID: 2081414433}
   menuSceneName: menu
   fadeDuration: 2
@@ -3459,8 +3458,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlexandraScript
   enemyName: Alexandra
-  moveChance: 100
-  moveInterval: 1
+  moveChance: 10
+  moveInterval: 120
   killProgress: 100
   progress: 0
   windowUI: {fileID: 584246916}
@@ -3482,7 +3481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &5522182121939674226
 BoxCollider2D:
   m_ObjectHideFlags: 0
