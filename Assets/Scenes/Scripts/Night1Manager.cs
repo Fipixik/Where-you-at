@@ -2,14 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class Night1Manager : MonoBehaviour
+// DÌDÍ Z BASE NIGHT MANAGERU
+public class Night1Manager : BaseNightManager
 {
     [Header("Night Settings")]
-    public float nightDuration = 10f;
+    public float nightDuration = 10f; // <-- TATO PROMÌNNÁ ØÍDÍ DÉLKU NOCI!
 
     [Header("Enemy References")]
-    public AlexandraScript alexandra; // <-- PØIØAÏ: Objekt Alexandry
-    public LinScript lin; // <-- PØIØAÏ: Objekt Lin
+    public AlexandraScript alexandra;
+    public LinScript lin;
 
     [Header("Screen Fader")]
     public ScreenFader screenFader;
@@ -19,8 +20,6 @@ public class Night1Manager : MonoBehaviour
 
     [Header("Fade Settings")]
     public float fadeDuration = 2f;
-
-    // ZDE BYL SLOT PRO VIDEO PLAYER
 
     void Awake()
     {
@@ -34,10 +33,9 @@ public class Night1Manager : MonoBehaviour
 
     void Start()
     {
-        // NASTAVENÍ OBTÍŽNOSTI PRO NOC 1
+        // NASTAVENÍ OBTÍŽNOSTI PRO NOC 1 (Zùstává stejné)
         if (alexandra != null)
         {
-            // Pùvodní parametry pro Noc 1: Alexandra
             alexandra.moveChance = 50;
             alexandra.moveInterval = 1f;
             alexandra.killProgress = 100;
@@ -45,10 +43,9 @@ public class Night1Manager : MonoBehaviour
 
         if (lin != null)
         {
-            // Parametry pro Noc 1: Lin (PØEPISUJÍ HODNOTY V INSPECTORU!)
-            lin.moveChance = 20;
+            lin.moveChance = 100;
             lin.moveInterval = 7f;
-            lin.killTimerDuration = 4f;
+            lin.killTimerDuration = 5f;
         }
 
         Debug.Log("Night 1 started!");
@@ -57,6 +54,7 @@ public class Night1Manager : MonoBehaviour
 
     private IEnumerator RunNight()
     {
+        // KLÍÈOVÝ ØÁDEK: ÈEKÁ, DOKUD NEUPLYNE nightDuration
         yield return new WaitForSeconds(nightDuration);
 
         // WIN SEQUENCE
@@ -78,17 +76,15 @@ public class Night1Manager : MonoBehaviour
             screenFader.ResetFade();
     }
 
-    // FINAL GAME OVER FUNKCE: Spustí se po jumpscare!
-    public void GameOver(string killerName)
+    // FINAL GAME OVER FUNKCE (OVERRIDE z BaseNightManager)
+    public override void GameOver(string killerName)
     {
         Debug.Log($"GAME OVER! Zabita: {killerName}. Spouštím návrat do menu.");
-        // Jdeme rovnou na fade
         StartCoroutine(EndGameTransition());
     }
 
     private IEnumerator EndGameTransition()
     {
-        // Rychlý fade (bez èekání na video)
         if (screenFader != null)
         {
             screenFader.fadeDuration = 0.5f;

@@ -7,20 +7,38 @@ public class CameraHoverZone : MonoBehaviour, IPointerEnterHandler
     public GameObject cameraPanel;
     public CameraFollowCursor camFollow;
 
-    // NOVE: Reference na tvůj Camera Manager
-    public CameraManager cameraManager;      // <-- PŘIDEJ TOTO
+    public CameraManager cameraManager;      // <-- Zde je tvůj Manager
 
     private bool isShowing = false;
 
+    // TATO FUNKCE ZAJIŠŤUJE, ŽE PO ZNOVUNAČTENÍ SCÉNY JE VŠE OK
+    void Start()
+    {
+        // 1. Nastaví, že monitor je na 100% dole (isShowing = false)
+        isShowing = false;
+
+        // 2. Zajistí, že se kamera HÝBE
+        if (camFollow != null)
+        {
+            camFollow.canMove = true;
+        }
+
+        // 3. Pošle signál Manageru, aby byl v klidu (vypnul vizuály)
+        if (cameraManager != null)
+        {
+            cameraManager.DeactivateMonitor();
+        }
+
+        Debug.Log("HoverZone resetována. Kamera se hýbe.");
+    }
+
     private void Awake()
     {
-        // Tady už NECHÁME cameraPanel schovaný, aktivuje ho Manager
-        // if (cameraPanel != null) cameraPanel.SetActive(false); 
+        // Původní kód. Už nemusí volat SetActive(false), to dělá DeactivateMonitor.
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Nová kontrola, včetně CameraManageru
         if (cameraPanel == null || camFollow == null || cameraManager == null) return;
 
         // Toggle panel ON/OFF
@@ -29,21 +47,16 @@ public class CameraHoverZone : MonoBehaviour, IPointerEnterHandler
         // Původní logika pro zamykání kamery
         camFollow.canMove = !isShowing;
 
-        // NOVÁ LOGIKA: Volání CameraManageru
+        // Volání CameraManageru
         if (isShowing)
         {
-            // Zvedáme monitor
             cameraManager.ActivateMonitor();
             Debug.Log("Jsi v kamerách!");
         }
         else
         {
-            // Sklápíme monitor
             cameraManager.DeactivateMonitor();
             Debug.Log("Nejsi v kamerách!");
         }
-
-        // POZOR! Původní řádek 'cameraPanel.SetActive(isShowing);' zde teď vynecháme, 
-        // protože aktivaci panelu řídí CameraManager!
     }
 }

@@ -15,11 +15,10 @@ public class AlexandraScript : MonoBehaviour
     public GameObject windowUI; // Pùvodní vizuál progresu
 
     [Header("External Manager")]
-    public Night1Manager nightManager;
+    public BaseNightManager nightManager;
 
-    // TOTO JE KLÍÈOVÝ VIZUÁL A STAV
     [Header("Kill State Vizuál")]
-    public GameObject killStateUI; // <-- PØIØAÏ: Nový jumpscare vizuál (SetActive(false) na zaèátku)
+    public GameObject killStateUI; // <-- PØIØAÏ: Nový jumpscare vizuál
     private bool isKillStateReached = false; // Flag pro finální stav
 
     private Collider2D myCollider;
@@ -38,17 +37,26 @@ public class AlexandraScript : MonoBehaviour
         if (windowUI != null)
             windowUI.SetActive(false);
 
-        progress = 0; // Fix: Inicializace progresu je jen zde na zaèátku noci!
+        progress = 0;
         isKillStateReached = false;
         if (killStateUI != null) killStateUI.SetActive(false);
 
         StartCoroutine(MoveRoutine());
     }
 
-    // VEØEJNÁ VLASTNOST: CameraManager kontroluje, zda se má Game Over spustit
     public bool IsInKillState()
     {
         return isKillStateReached;
+    }
+
+    // TATO FUNKCE ZAPNE VIZUÁL AŽ PØED GAME OVER
+    public void ActivateKillVisual()
+    {
+        if (isKillStateReached && killStateUI != null)
+        {
+            if (windowUI != null) windowUI.SetActive(false);
+            killStateUI.SetActive(true);
+        }
     }
 
     private void Update()
@@ -72,7 +80,6 @@ public class AlexandraScript : MonoBehaviour
             yield return new WaitForSeconds(moveInterval);
             int roll = Random.Range(0, 100);
 
-            // Bìžná logika: Nesmí progresovat, když už je v kill state
             if (roll < moveChance && !isKillStateReached)
             {
                 Debug.Log($"{enemyName}: Chance success! Starting progress.");
@@ -102,33 +109,23 @@ public class AlexandraScript : MonoBehaviour
             yield return null;
         }
 
+        // TOTO JE FINÁLNÍ ZMÌNA LOGIKY: Nastavení flagu PØED ukonèením rutiny
         if (progress >= killProgress)
         {
-            // FÁZE 2: VSTUP DO KILL STATE - NENÍ CESTY ZPÌT KLIKNUTÍM!
             isKillStateReached = true;
-
-            // PÙVODNÍ UI se vypne, Nové UI (JUMPSCARE VIZUÁL) se zapne
-            if (windowUI != null) windowUI.SetActive(false);
-            if (killStateUI != null) killStateUI.SetActive(true);
-
             Debug.Log($"{enemyName}: Kill progress reached! Finální hrozba je aktivní a èeká na stáhnutí monitoru.");
-
-            // Progres dosáhl cíle, ale NENÍ Game Over. Game Over je v CameraManageru.
         }
 
-        isProgressing = false; // Tím se umožní MoveRoutine spustit to znovu
+        isProgressing = false;
 
-        // Vypneme pùvodní vizuál
         if (windowUI != null)
             windowUI.SetActive(false);
     }
 
     private void HandlePlayerClick()
     {
-        // TOTO JE KLÍÈOVÝ FIX
         if (isKillStateReached)
         {
-            // FÁZE 2: KILL STATE - KLIKNUTÍ NEDÌLÁ NIC!
             Debug.Log($"{enemyName}: Alexandra je v kill state. Kliknutí nefunguje.");
         }
         else // FÁZE 1: BÌŽNÝ PROGRES - Obrana funguje (Pøed 100%)
@@ -137,7 +134,6 @@ public class AlexandraScript : MonoBehaviour
             isProgressing = false;
         }
 
-        // Vypneme pùvodní vizuál
         if (windowUI != null)
             windowUI.SetActive(false);
     }

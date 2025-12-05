@@ -19,9 +19,10 @@ public class LinScript : MonoBehaviour
     // EXTERNAL REFERENCES
     [Header("External References")]
     public CameraManager cameraManager;
-    public HoldDoorLock doorLock;           // <-- ZDE PØIØAÏ GAMEOBJECT S HoldDoorLock.cs
+    public HoldDoorLock doorLock;
     [Header("Game Manager")]
-    public Night1Manager nightManager; // <-- ZDE PØIØAÏ Night1Manager
+    // ZMÌNA: Používá generický BaseNightManager
+    public BaseNightManager nightManager; // <-- PØIØAÏ: Night1Manager
 
     // Interné stavy
     public int currentPosition = 0;
