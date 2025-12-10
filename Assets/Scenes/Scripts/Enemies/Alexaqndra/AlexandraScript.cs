@@ -50,14 +50,6 @@ public class AlexandraScript : MonoBehaviour
     }
 
     // TATO FUNKCE ZAPNE VIZUÁL AŽ PØED GAME OVER
-    public void ActivateKillVisual()
-    {
-        if (isKillStateReached && killStateUI != null)
-        {
-            if (windowUI != null) windowUI.SetActive(false);
-            killStateUI.SetActive(true);
-        }
-    }
 
     private void Update()
     {
@@ -113,6 +105,7 @@ public class AlexandraScript : MonoBehaviour
         if (progress >= killProgress)
         {
             isKillStateReached = true;
+            killStateUI.SetActive(true);
             Debug.Log($"{enemyName}: Kill progress reached! Finální hrozba je aktivní a èeká na stáhnutí monitoru.");
         }
 
