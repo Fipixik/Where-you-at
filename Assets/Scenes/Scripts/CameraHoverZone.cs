@@ -1,62 +1,60 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CameraHoverZone : MonoBehaviour, IPointerEnterHandler
+public class CameraHoverZone : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI Panel s kamerou")]
     public GameObject cameraPanel;
     public CameraFollowCursor camFollow;
 
-    public CameraManager cameraManager;      // <-- Zde je tvůj Manager
+    public CameraManager cameraManager;
 
     private bool isShowing = false;
 
-    // TATO FUNKCE ZAJIŠŤUJE, ŽE PO ZNOVUNAČTENÍ SCÉNY JE VŠE OK
     void Start()
     {
-        // 1. Nastaví, že monitor je na 100% dole (isShowing = false)
         isShowing = false;
 
-        // 2. Zajistí, že se kamera HÝBE
         if (camFollow != null)
         {
             camFollow.canMove = true;
         }
 
-        // 3. Pošle signál Manageru, aby byl v klidu (vypnul vizuály)
         if (cameraManager != null)
         {
             cameraManager.DeactivateMonitor();
         }
-
-        Debug.Log("HoverZone resetována. Kamera se hýbe.");
     }
 
-    private void Awake()
-    {
-        // Původní kód. Už nemusí volat SetActive(false), to dělá DeactivateMonitor.
-    }
-
+    // TATO FUNKCE SE SPUSTÍ, KDYŽ NAJEDEŠ MYŠÍ NA OBRÁZEK
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (cameraPanel == null || camFollow == null || cameraManager == null) return;
 
-        // Toggle panel ON/OFF
-        isShowing = !isShowing;
+        // Pokud monitor NENÍ dole (je nahoře), tak ho chceme dát dolů? 
+        // Nebo to funguje jako přepínač (Toggle)?
 
-        // Původní logika pro zamykání kamery
+        // Zde záleží, jak to chceš. Původní kód dělal Toggle.
+        // Pokud to má být tlačítko: "Najedu -> Otevře se", "Odjedu -> Zavře se"?
+        // Nebo "Kliknu -> Otevře se"?
+
+        // Předpokládám, že chceš Toggle (Najedu = Změna stavu).
+
+        isShowing = !isShowing;
         camFollow.canMove = !isShowing;
 
-        // Volání CameraManageru
         if (isShowing)
         {
             cameraManager.ActivateMonitor();
-            Debug.Log("Jsi v kamerách!");
         }
         else
         {
             cameraManager.DeactivateMonitor();
-            Debug.Log("Nejsi v kamerách!");
         }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // Pokud bys chtěl, aby se to zavřelo, když myš odjede, přidej kód sem.
     }
 }

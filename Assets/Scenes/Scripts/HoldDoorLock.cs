@@ -10,13 +10,14 @@ public class HoldDoorLock : MonoBehaviour
     // Hlavní stav dveøí, který budeme používat pro logiku
     [HideInInspector] public bool isDoorClosed = false;
 
-    // TOTO JE REFERENCE NA LIN: Musí být pøiøazena v Editoru!
+    [Header("Enemy Interaction")]
     public LinScript linEnemy;
+    public LanScript lanEnemy; // <-- NOVÁ REFERENCE PRO LAN!
 
     [Header("Door Visuals (Toggle Objects)")]
-    // Objekt, který ukazuje ZAVØENÉ dveøe. (MUSÍ BÝT DÍTÌTEM!)
+    // Objekt, který ukazuje ZAVØENÉ dveøe.
     public GameObject closedDoorVisual;
-    // Objekt, který ukazuje OTEVØENÉ dveøe. (MUSÍ BÝT DÍTÌTEM!)
+    // Objekt, který ukazuje OTEVØENÉ dveøe.
     public GameObject openDoorVisual;
 
     private Collider2D myCollider;
@@ -46,8 +47,6 @@ public class HoldDoorLock : MonoBehaviour
                 if (!isDoorClosed)
                 {
                     holdTimer += Time.deltaTime;
-                    // Mùžeš zde pøidat vizuální progress bar
-                    // Debug.Log($"Drženo: {holdTimer:F1}s / {holdTimeRequired}s"); 
 
                     // 2. Kontrola, zda uplynuly 3 sekundy
                     if (holdTimer >= holdTimeRequired)
@@ -62,7 +61,7 @@ public class HoldDoorLock : MonoBehaviour
                 if (holdTimer > 0 && !isDoorClosed)
                 {
                     holdTimer = 0f;
-                    Debug.Log("Kurzor opustil trigger. Reset èasu.");
+                    // Debug.Log("Kurzor opustil trigger. Reset èasu.");
                 }
             }
         }
@@ -78,7 +77,7 @@ public class HoldDoorLock : MonoBehaviour
             {
                 // Pokud hráè pustil pøed zavøením (pøed 3s), resetujeme èasovaè
                 holdTimer = 0f;
-                Debug.Log("Pusštìno pøed zavøením. Reset èasu.");
+                // Debug.Log("Pusštìno pøed zavøením. Reset èasu.");
             }
         }
     }
@@ -94,12 +93,20 @@ public class HoldDoorLock : MonoBehaviour
         if (closedDoorVisual != null) closedDoorVisual.SetActive(true);
         if (openDoorVisual != null) openDoorVisual.SetActive(false);
 
-        Debug.Log("DVEØE ZAVØENY po držení po dobu 3s!");
+        Debug.Log("DVEØE ZAVØENY!");
 
-        // KLÍÈOVÝ KROK: Øíkáme Lin, že je zablokovaná!
+        // KLÍÈOVÝ KROK 1: Øíkáme Lin, že je zablokovaná (útìk)
         if (linEnemy != null)
         {
             linEnemy.StopKillRoutine();
+        }
+
+        // KLÍÈOVÝ KROK 2: Øíkáme Lan, že se dveøe zavøely!
+        // Lan: Jumpscare, pokud èeká na pozici 6.
+        if (lanEnemy != null)
+        {
+            lanEnemy.DoorWasClosed();
+            // Debug se vypíše ze skriptu LanScript.cs
         }
     }
 
@@ -116,10 +123,16 @@ public class HoldDoorLock : MonoBehaviour
 
         Debug.Log("DVEØE OTEVØENY.");
 
-        // KLÍÈOVÝ KROK: Øíkáme Lin, že už není blokovaná!
+        // KLÍÈOVÝ KROK 1: Lin smí pokraèovat v pohybu.
         if (linEnemy != null)
         {
             linEnemy.Unblock();
+        }
+
+        // KLÍÈOVÝ KROK 2: Lan smí pokraèovat v pohybu (pokud pøedtím ustoupila po èasovém limitu).
+        if (lanEnemy != null)
+        {
+            lanEnemy.Unblock();
         }
     }
 }

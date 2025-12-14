@@ -1,16 +1,24 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-// DÌDÍ Z BASE NIGHT MANAGERU
 public class Night1Manager : BaseNightManager
 {
     [Header("Night Settings")]
-    public float nightDuration = 10f; // <-- TATO PROMÌNNÁ ØÍDÍ DÉLKU NOCI!
+    public float nightDuration = 100f; // DÃ©lka noci
 
     [Header("Enemy References")]
     public AlexandraScript alexandra;
     public LinScript lin;
+    // Santa tu nenÃ­! ðŸš«ðŸŽ…
+
+    [Header("Jumpscare Images (UI Panels)")]
+    // PÅ™etÃ¡hni sem panely s obrÃ¡zky pro Alexandru a Lin
+    public GameObject alexandraJumpscare;
+    public GameObject linJumpscare;
+
+    [Header("Jumpscare Settings")]
+    public float jumpscareDuration = 2f;
 
     [Header("Screen Fader")]
     public ScreenFader screenFader;
@@ -33,28 +41,32 @@ public class Night1Manager : BaseNightManager
 
     void Start()
     {
-        // NASTAVENÍ OBTÍŽNOSTI PRO NOC 1 (Zùstává stejné)
+        // 1. ALEXANDRA (Easy mode)
         if (alexandra != null)
         {
-            alexandra.moveChance = 50;
-            alexandra.moveInterval = 1f;
+            alexandra.moveChance = 40;
+            alexandra.moveInterval = 2f;
             alexandra.killProgress = 100;
         }
 
+        // 2. LIN (Easy mode)
         if (lin != null)
         {
-            lin.moveChance = 100;
-            lin.moveInterval = 7f;
-            lin.killTimerDuration = 5f;
+            lin.moveChance = 80;
+            lin.moveInterval = 8f;
+            lin.killTimerDuration = 6f;
         }
 
-        Debug.Log("Night 1 started!");
+        // Vypneme jumpscare obrÃ¡zky na startu, aby nestraÅ¡ily
+        if (alexandraJumpscare != null) alexandraJumpscare.SetActive(false);
+        if (linJumpscare != null) linJumpscare.SetActive(false);
+
+        Debug.Log("Night 1 started (No Santa)!");
         StartCoroutine(RunNight());
     }
 
     private IEnumerator RunNight()
     {
-        // KLÍÈOVÝ ØÁDEK: ÈEKÁ, DOKUD NEUPLYNE nightDuration
         yield return new WaitForSeconds(nightDuration);
 
         // WIN SEQUENCE
@@ -65,8 +77,11 @@ public class Night1Manager : BaseNightManager
         }
 
         Debug.Log("Night 1 ended! Loading Menu...");
-        PlayerPrefs.SetInt("CurrentNight", 1);
+
+        // Odemkneme Noc 2
+        PlayerPrefs.SetInt("CurrentNight", 2);
         PlayerPrefs.Save();
+
         SceneManager.LoadScene(menuSceneName);
     }
 
@@ -76,21 +91,35 @@ public class Night1Manager : BaseNightManager
             screenFader.ResetFade();
     }
 
-    // FINAL GAME OVER FUNKCE (OVERRIDE z BaseNightManager)
+    // --- GAME OVER S JUMPSCARE ---
     public override void GameOver(string killerName)
     {
-        Debug.Log($"GAME OVER! Zabita: {killerName}. Spouštím návrat do menu.");
-        StartCoroutine(EndGameTransition());
+        Debug.Log($"GAME OVER! Zabita: {killerName}.");
+        StopAllCoroutines(); // ZastavÃ­ Äas
+        StartCoroutine(JumpscareSequence(killerName));
     }
 
-    private IEnumerator EndGameTransition()
+    private IEnumerator JumpscareSequence(string killerName)
     {
+        // Zapneme sprÃ¡vnÃ½ obrÃ¡zek
+        if (killerName == "Alexandra" && alexandraJumpscare != null)
+        {
+            alexandraJumpscare.SetActive(true);
+        }
+        else if (killerName == "Lin" && linJumpscare != null)
+        {
+            linJumpscare.SetActive(true);
+        }
+
+        // ÄŒekÃ¡me a dÄ›sÃ­me hrÃ¡Äe
+        yield return new WaitForSeconds(jumpscareDuration);
+
+        // NÃ¡vrat do menu
         if (screenFader != null)
         {
             screenFader.fadeDuration = 0.5f;
             yield return StartCoroutine(screenFader.FadeToBlackAndWait());
         }
-
         SceneManager.LoadScene(menuSceneName);
     }
 }

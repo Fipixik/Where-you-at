@@ -10,19 +10,27 @@ public class CameraManager : MonoBehaviour
 
     public int currentCameraID = 1;
 
-    // LIN TRACKING FIELDS
-    [Header("Enemy Tracking")]
+    // --- PŘIDANÉ REFERENCE PRO LAN A SANTU ---
+    [Header("Enemy Tracking - Lin")]
     public LinScript linEnemy;
     [Header("Lin Camera Vizuály (0=P1, 4=P5)")]
     public GameObject[] linCameraViews;
 
-    // HOTSPOT TOGGLE FIELD
+    [Header("Enemy Tracking - Lan")]
+    public LanScript lanEnemy; // <-- NOVÁ REFERENCE PRO LAN MANAGER
+    [Header("Lan Camera Vizuály (0=P1, 4=P5)")]
+    public GameObject[] lanCameraViews; // <-- NOVÉ POLE PRO 5 OBRÁZKŮ LAN
+
+    [Header("Enemy Tracking - Santa")]
+    public ThiefScript santaEnemy; // <-- NOVÁ REFERENCE PRO SANTA MANAGER (ThiefScript)
+    // ------------------------------------------
+
     [Header("External Controls")]
     public GameObject[] cameraHotspots;
 
-    // TOTO JE NOVÉ: REFERENCE PRO GAME OVER CHECK
+    // TOTO JE REFERENCE PRO GAME OVER CHECK (původní)
     [Header("Game Over Check")]
-    public AlexandraScript alexandra; // <-- ZDE MUSÍ BÝT PŘIŘAZENA ALEXANDRA
+    public AlexandraScript alexandra; 
 
     private void Start()
     {
@@ -31,6 +39,7 @@ public class CameraManager : MonoBehaviour
             Debug.LogError("CHYBA: Nenastavil/a jsi dostatek kamer (potřebuješ alespoň 5 viewů)!");
         }
 
+        // VYPÍNÁNÍ VIZUÁLŮ NA STARTU
         if (linCameraViews != null)
         {
             foreach (GameObject view in linCameraViews)
@@ -38,6 +47,14 @@ public class CameraManager : MonoBehaviour
                 if (view != null) view.SetActive(false);
             }
         }
+        if (lanCameraViews != null) // Vypnout i vizuály Lan!
+        {
+             foreach (GameObject view in lanCameraViews)
+            {
+                if (view != null) view.SetActive(false);
+            }
+        }
+        // U Santy se o vypnutí stará jeho vlastní skript ResetSanta()
 
         ToggleHotspots(false);
         if (cameraDisplayPanel != null) cameraDisplayPanel.SetActive(false);
@@ -64,7 +81,7 @@ public class CameraManager : MonoBehaviour
     {
         bool isMonitorActive = (cameraDisplayPanel != null && cameraDisplayPanel.activeInHierarchy);
 
-        // 1. Přepínání 5 vizuálů kamery
+        // 1. Přepínání 5 vizuálů kamery (Pozadí/Základ)
         for (int i = 0; i < cameraViews.Length; i++)
         {
             GameObject view = cameraViews[i];
@@ -76,28 +93,43 @@ public class CameraManager : MonoBehaviour
             }
         }
 
-        // 2. Logika: Zobrazení Lin
-        if (linEnemy != null && linCameraViews != null)
+        // --- 2. Logika: Zobrazení Lin ---
+        UpdateEnemyVisibility(linEnemy, linCameraViews, isMonitorActive);
+        
+        // --- 3. Logika: Zobrazení Lan ---
+        UpdateEnemyVisibility(lanEnemy, lanCameraViews, isMonitorActive);
+        
+        // --- 4. Logika: Aktualizace Santy ---
+        // Santa nepotřebuje speciální logiku zde, protože jeho vizuál zapíná jeho ThiefScript.
+        // My jen zajistíme, že jeho skript pracuje správně s aktivitou monitoru/kamery.
+    }
+    
+    // Nová univerzální metoda pro Lin a Lan (úspora kódu a čitelnost)
+    private void UpdateEnemyVisibility(dynamic enemyScript, GameObject[] enemyViews, bool isMonitorActive)
+    {
+        if (enemyScript == null || enemyViews == null) return;
+        
+        // Vypni všechny vizuály nepřítele (Lin/Lan)
+        foreach (GameObject view in enemyViews)
         {
-            foreach (GameObject view in linCameraViews)
-            {
-                if (view != null) view.SetActive(false);
-            }
+            if (view != null) view.SetActive(false);
+        }
 
-            int linPos = linEnemy.currentPosition;
-            int camIndex = linPos - 1;
+        // Zkontroluj, kde je nepřítel
+        int enemyPos = enemyScript.currentPosition;
+        int camIndex = enemyPos - 1;
 
-            // Kontrola: Shoda pozice Lin s AKTUALNĚ ZAPNUTOU kamerou
-            if (linPos >= 1 && linPos <= 5 && linPos == currentCameraID)
+        // Nepřítel je na pozici 1-5 A hráč se dívá na správnou kameru
+        if (enemyPos >= 1 && enemyPos <= 5 && enemyPos == currentCameraID)
+        {
+            if (camIndex < enemyViews.Length && enemyViews[camIndex] != null)
             {
-                if (camIndex < linCameraViews.Length && linCameraViews[camIndex] != null)
-                {
-                    linCameraViews[camIndex].SetActive(isMonitorActive);
-                    Debug.Log($"Lin JE vidět na CAM {linPos}.");
-                }
+                enemyViews[camIndex].SetActive(isMonitorActive);
+                // Debug.Log($"{enemyScript.enemyName} JE vidět na CAM {enemyPos}.");
             }
         }
     }
+
 
     public void ActivateMonitor()
     {
@@ -116,7 +148,6 @@ public class CameraManager : MonoBehaviour
         // TOTO JE KLÍČOVÝ GAME OVER CHECK PRO ALEXANDRU!
         if (alexandra != null && alexandra.IsInKillState())
         {
-            // Hráč stáhl monitor, když byla Alexandra v kill state (100%)!
             if (alexandra.nightManager != null)
             {
                 Debug.Log("JUMPSCARE ALEXANDRA! Monitor stažen v kill state!");
@@ -131,10 +162,18 @@ public class CameraManager : MonoBehaviour
 
         ToggleHotspots(false);
 
-        // VYPÍNÁNÍ VIZUÁLŮ
+        // VYPÍNÁNÍ VIZUÁLŮ (Vše, co bylo na monitoru)
         if (linCameraViews != null)
         {
             foreach (GameObject view in linCameraViews)
+            {
+                if (view != null) view.SetActive(false);
+            }
+        }
+        // Vypnout i Lan
+        if (lanCameraViews != null)
+        {
+            foreach (GameObject view in lanCameraViews)
             {
                 if (view != null) view.SetActive(false);
             }
@@ -145,6 +184,8 @@ public class CameraManager : MonoBehaviour
             if (view != null)
                 view.SetActive(false);
         }
+        
+        // Poznámka: Vizuály Santy se vypnou samy přes jeho ThiefScript.UpdateVisibility()
     }
 
     private void ToggleHotspots(bool active)
