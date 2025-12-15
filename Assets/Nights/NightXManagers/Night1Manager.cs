@@ -10,10 +10,8 @@ public class Night1Manager : BaseNightManager
     [Header("Enemy References")]
     public AlexandraScript alexandra;
     public LinScript lin;
-    // Santa tu není! 🚫🎅
 
     [Header("Jumpscare Images (UI Panels)")]
-    // Přetáhni sem panely s obrázky pro Alexandru a Lin
     public GameObject alexandraJumpscare;
     public GameObject linJumpscare;
 
@@ -41,27 +39,26 @@ public class Night1Manager : BaseNightManager
 
     void Start()
     {
-        // 1. ALEXANDRA (Easy mode)
+        // 1. ALEXANDRA
         if (alexandra != null)
         {
-            alexandra.moveChance = 40;
-            alexandra.moveInterval = 2f;
+            alexandra.moveChance = 10;
+            alexandra.moveInterval = 1f;
             alexandra.killProgress = 100;
         }
 
-        // 2. LIN (Easy mode)
+        // 2. LIN
         if (lin != null)
         {
-            lin.moveChance = 80;
-            lin.moveInterval = 8f;
-            lin.killTimerDuration = 6f;
+            lin.moveChance = 25;
+            lin.moveInterval = 5f;
+            lin.killTimerDuration = 10f;
         }
 
-        // Vypneme jumpscare obrázky na startu, aby nestrašily
         if (alexandraJumpscare != null) alexandraJumpscare.SetActive(false);
         if (linJumpscare != null) linJumpscare.SetActive(false);
 
-        Debug.Log("Night 1 started (No Santa)!");
+
         StartCoroutine(RunNight());
     }
 
@@ -91,7 +88,7 @@ public class Night1Manager : BaseNightManager
             screenFader.ResetFade();
     }
 
-    // --- GAME OVER S JUMPSCARE ---
+    // --- GAME OVER
     public override void GameOver(string killerName)
     {
         Debug.Log($"GAME OVER! Zabita: {killerName}.");
