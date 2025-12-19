@@ -4,13 +4,13 @@ using System.Collections;
 
 public class MenuButtonNew : MonoBehaviour
 {
-    public string action; // "new", "continue", or "exit"
-    [SerializeField] private MenuManager menuManager; // assign in Inspector
-    [SerializeField] private ScreenFader screenFader; // assign your ScreenFader here
+    public string action; // "new" "continue"  "exit"
+    [SerializeField] private MenuManager menuManager;
+    [SerializeField] private ScreenFader screenFader;
 
     [Header("Hover Sprite Fade")]
-    [SerializeField] private SpriteRenderer hoverSprite; // sprite to show on hover
-    [SerializeField] private float fadeSpeed = 120f; // how fast it fades
+    [SerializeField] private SpriteRenderer hoverSprite; //sprite pro hover
+    [SerializeField] private float fadeSpeed = 120f; //rychlost fadu
 
     private Collider2D col;
     private float targetAlpha = 0f;
@@ -19,13 +19,13 @@ public class MenuButtonNew : MonoBehaviour
     {
         col = GetComponent<Collider2D>();
         if (col == null)
-            Debug.LogWarning("MenuButton requires a Collider2D!");
+            Debug.LogWarning("mbutton potrebuje Collider2D");
 
         if (hoverSprite != null)
         {
             Color c = hoverSprite.color;
             c.a = 0f;
-            hoverSprite.color = c; // start fully transparent
+            hoverSprite.color = c; 
         }
     }
 
@@ -35,10 +35,10 @@ public class MenuButtonNew : MonoBehaviour
 
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-        // Determine target alpha based on hover
+        // jakej sprite zobrazit
         targetAlpha = col.OverlapPoint(mousePos) ? 1f : 0f;
 
-        // Smoothly fade the sprite
+        // sprite fade
         Color color = hoverSprite.color;
         color.a = Mathf.MoveTowards(color.a, targetAlpha, fadeSpeed * Time.deltaTime);
         hoverSprite.color = color;

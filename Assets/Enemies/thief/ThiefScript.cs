@@ -37,7 +37,7 @@ public class ThiefScript : MonoBehaviour
         {
             timer += Time.deltaTime;
 
-            // 1. UPDATE VIZUÁLU (Oprava tvého problému)
+            // 1. UPDATE VIZUÁLU
             UpdateVisibility();
 
             // 2. KONTROLA ČASU (Smrt)
@@ -55,10 +55,9 @@ public class ThiefScript : MonoBehaviour
         }
     }
 
-    // Tuhle funkci jsem přidal - stará se o to, aby byl vidět jen na správné kameře
     void UpdateVisibility()
     {
-        if (cameraManager == null) return;
+        if (cameraManager == null || activeCameraIndex == -1) return;
 
         // Zjistíme, jestli je monitor nahoře (podle toho panelu v CameraManageru)
         bool isMonitorOn = cameraManager.cameraDisplayPanel != null && cameraManager.cameraDisplayPanel.activeInHierarchy;
@@ -104,6 +103,8 @@ public class ThiefScript : MonoBehaviour
 
     void CheckClick()
     {
+        if (!isActive) return;
+
         Vector2 clickPosition = Mouse.current.position.ReadValue();
         Vector3 worldClickPosition = Camera.main.ScreenToWorldPoint(clickPosition);
         RaycastHit2D hit = Physics2D.Raycast(worldClickPosition, Vector2.zero);
@@ -126,10 +127,13 @@ public class ThiefScript : MonoBehaviour
 
     void Jumpscare()
     {
+        // Tady se spouští Game Over sekvence.
         if (nightManager != null)
         {
             nightManager.GameOver(enemyName);
         }
+        // V NightManager.cs musí být ošetřená animace fade-outu.
+
         ResetSanta();
     }
 

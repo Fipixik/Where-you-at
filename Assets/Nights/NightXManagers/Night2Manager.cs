@@ -12,7 +12,7 @@ public class Night2Manager : BaseNightManager
     public AlexandraScript alexandra;
     public LinScript lin;
     public ThiefScript evilSanta; // Evil Santa (ThiefScript)
-    public LanScript lan;         // Lan (AssistantScript)
+    public LanScript lan;          // Lan (AssistantScript)
 
     [Header("Jumpscare Images (UI Panels)")]
     // Sem přetáhneš GameObjekty s obrázky přes celou obrazovku
@@ -29,7 +29,7 @@ public class Night2Manager : BaseNightManager
     private float gameOverFadeDuration = 2.0f; // Pomalý fade pro Game Over, jak jsi chtěl/a
 
     [Header("Screen Fader")]
-    public ScreenFader screenFader;
+    public ScreenFader screenFader; // <-- KRITICKÁ REFERENCE PRO FADE
 
     [Header("Menu Scene")]
     public string menuSceneName = "menu";
@@ -46,12 +46,14 @@ public class Night2Manager : BaseNightManager
 
     void Start()
     {
+        // --- NASTAVENÍ OBTÍŽNOSTI PRO NOC 2 ---
+
         // 1. ALEXANDRA (Harder)
         if (alexandra != null)
         {
-            alexandra.moveChance = 60;
-            alexandra.moveInterval = 1.5f;
-            alexandra.killProgress = 100;
+            alexandra.moveChance = 100;
+            alexandra.moveInterval = 10f;
+            alexandra.killProgress = 5;
         }
 
         // 2. LIN (Harder)
@@ -65,12 +67,12 @@ public class Night2Manager : BaseNightManager
         // 3. EVIL SANTA (THIEF)
         if (evilSanta != null)
         {
-            evilSanta.spawnChance = 50;
-            evilSanta.spawnInterval = 12f;
-            evilSanta.killTimerDuration = 8f;
+            evilSanta.spawnChance = 100;
+            evilSanta.spawnInterval = 5f;
+            evilSanta.killTimerDuration = 5f;
         }
 
-        // 4. LAN (ASISTENTKA) - Obrácená Logika
+        // 4. LAN (ASISTENTKA)
         if (lan != null)
         {
             lan.moveChance = 50;
@@ -115,6 +117,8 @@ public class Night2Manager : BaseNightManager
     // --- FINAL GAME OVER FUNKCE ---
     public override void GameOver(string killerName)
     {
+        // Zde byla hlášena chyba (řádek 118). 
+        // LogError se vypíše, ale nebrání spuštění další sekvence (JumpscareSequence).
         Debug.LogError($"GAME OVER! Zabita: {killerName}. Spouštím Jumpscare.");
 
         // Zastavíme pohyb všech nepřátel (aby to nevypadalo divně)
@@ -127,6 +131,14 @@ public class Night2Manager : BaseNightManager
     private IEnumerator JumpscareSequence(string killerName)
     {
         // 1. Zjistíme, kdo zabil, a zapneme jeho obrázek
+
+        // Vypneme všechny, pokud náhodou něco zůstalo aktivní (Double Check)
+        if (alexandraJumpscare != null) alexandraJumpscare.SetActive(false);
+        if (linJumpscare != null) linJumpscare.SetActive(false);
+        if (santaJumpscare != null) santaJumpscare.SetActive(false);
+        if (lanJumpscare != null) lanJumpscare.SetActive(false);
+
+        // Zapneme správný obrázek
         if (killerName == "Alexandra" && alexandraJumpscare != null)
         {
             alexandraJumpscare.SetActive(true);
@@ -139,7 +151,7 @@ public class Night2Manager : BaseNightManager
         {
             santaJumpscare.SetActive(true);
         }
-        else if (killerName == "Lan" && lanJumpscare != null) // NOVÁ KONTROLA PRO LAN
+        else if (killerName == "Lan" && lanJumpscare != null)
         {
             lanJumpscare.SetActive(true);
         }
@@ -151,11 +163,15 @@ public class Night2Manager : BaseNightManager
         // 2. Čekáme (aby hráč ten obrázek viděl)
         yield return new WaitForSeconds(jumpscareDuration);
 
-        // 3. POMALÝ FADE OUT (jak jsi chtěl/a) a návrat do menu
+        // 3. POMALÝ FADE OUT (Tato část zajistí plynulý přechod)
         if (screenFader != null)
         {
             screenFader.fadeDuration = gameOverFadeDuration; // Použijeme delší fade (2.0f)
             yield return StartCoroutine(screenFader.FadeToBlackAndWait());
+        }
+        else
+        {
+            Debug.LogError("Screen Fader není přiřazen! Přecházím rovnou do menu.");
         }
 
         SceneManager.LoadScene(menuSceneName);

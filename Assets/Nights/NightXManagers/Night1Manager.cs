@@ -50,9 +50,9 @@ public class Night1Manager : BaseNightManager
         // 2. LIN
         if (lin != null)
         {
-            lin.moveChance = 25;
-            lin.moveInterval = 5f;
-            lin.killTimerDuration = 10f;
+            lin.moveChance = 100;
+            lin.moveInterval = 1f;
+            lin.killTimerDuration = 5f;
         }
 
         if (alexandraJumpscare != null) alexandraJumpscare.SetActive(false);
