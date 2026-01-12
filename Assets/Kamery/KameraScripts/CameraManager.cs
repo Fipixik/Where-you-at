@@ -3,201 +3,164 @@
 public class CameraManager : MonoBehaviour
 {
     [Header("Camera Views (0 = Cam 1, 4 = Cam 5)")]
-    public GameObject[] cameraViews;
+    public GameObject[] cameraViews; // Statické pozadí kamer
 
     [Header("Display UI")]
     public GameObject cameraDisplayPanel; // HLAVNÍ MONITOR PANEL
 
     public int currentCameraID = 1;
 
-    // --- PŘIDANÉ REFERENCE PRO LAN A SANTU ---
+    // --- ENEMY REFERENCES ---
     [Header("Enemy Tracking - Lin")]
     public LinScript linEnemy;
-    [Header("Lin Camera Vizuály (0=P1, 4=P5)")]
-    public GameObject[] linCameraViews;
+    public GameObject[] linCameraViews; // Fotky pro Lin
 
     [Header("Enemy Tracking - Lan")]
-    public LanScript lanEnemy; // <-- NOVÁ REFERENCE PRO LAN MANAGER
-    [Header("Lan Camera Vizuály (0=P1, 4=P5)")]
-    public GameObject[] lanCameraViews; // <-- NOVÉ POLE PRO 5 OBRÁZKŮ LAN
+    public LanScript lanEnemy;          // <-- ZDE MUSÍ BÝT LAN Z HIERARCHIE!
+    public GameObject[] lanCameraViews; // Fotky pro Lana
 
     [Header("Enemy Tracking - Santa")]
-    public ThiefScript santaEnemy; // <-- NOVÁ REFERENCE PRO SANTA MANAGER (ThiefScript)
-    // ------------------------------------------
+    public ThiefScript santaEnemy;      // Odkaz na Santu
+    // -------------------------
 
     [Header("External Controls")]
     public GameObject[] cameraHotspots;
 
-    // TOTO JE REFERENCE PRO GAME OVER CHECK (původní)
     [Header("Game Over Check")]
-    public AlexandraScript alexandra; 
+    public AlexandraScript alexandra;
 
     private void Start()
     {
+        // Kontrola
         if (cameraViews.Length < 5)
-        {
-            Debug.LogError("CHYBA: Nenastavil/a jsi dostatek kamer (potřebuješ alespoň 5 viewů)!");
-        }
+            Debug.LogError("CHYBA: Málo kamer v poli 'Camera Views'!");
 
-        // VYPÍNÁNÍ VIZUÁLŮ NA STARTU
-        if (linCameraViews != null)
-        {
-            foreach (GameObject view in linCameraViews)
-            {
-                if (view != null) view.SetActive(false);
-            }
-        }
-        if (lanCameraViews != null) // Vypnout i vizuály Lan!
-        {
-             foreach (GameObject view in lanCameraViews)
-            {
-                if (view != null) view.SetActive(false);
-            }
-        }
-        // U Santy se o vypnutí stará jeho vlastní skript ResetSanta()
+        // 1. Vypneme všechny fotky monster na startu
+        ResetVisuals(linCameraViews);
+        ResetVisuals(lanCameraViews);
 
+        // 2. Vypneme Hotspoty a Monitor
         ToggleHotspots(false);
         if (cameraDisplayPanel != null) cameraDisplayPanel.SetActive(false);
 
+        // 3. První update
         UpdateCameraView();
     }
 
+    // Pomocná funkce pro vypnutí polí
+    private void ResetVisuals(GameObject[] views)
+    {
+        if (views != null)
+        {
+            foreach (var v in views) if (v != null) v.SetActive(false);
+        }
+    }
+
+    // Volá se tlačítky kamer
     public void SwitchCamera(int newCamID)
     {
         if (newCamID >= 1 && newCamID <= cameraViews.Length)
         {
             currentCameraID = newCamID;
-            Debug.Log("Přepínám na kameru " + currentCameraID);
-
+            // Debug.Log("Přepínám na kameru " + currentCameraID);
             UpdateCameraView();
-        }
-        else
-        {
-            Debug.LogWarning("Neplatné ID kamery: " + newCamID);
         }
     }
 
+    // HLAVNÍ FUNKCE PRO AKTUALIZACI OBRAZU
     public void UpdateCameraView()
     {
         bool isMonitorActive = (cameraDisplayPanel != null && cameraDisplayPanel.activeInHierarchy);
 
-        // 1. Přepínání 5 vizuálů kamery (Pozadí/Základ)
+        // A. Zobrazit statické pozadí (místnost)
         for (int i = 0; i < cameraViews.Length; i++)
         {
-            GameObject view = cameraViews[i];
-            bool shouldBeActive = (i + 1 == currentCameraID);
-
-            if (view != null)
+            if (cameraViews[i] != null)
             {
-                view.SetActive(shouldBeActive && isMonitorActive);
+                bool isCurrent = (i + 1 == currentCameraID);
+                cameraViews[i].SetActive(isCurrent && isMonitorActive);
             }
         }
 
-        // --- 2. Logika: Zobrazení Lin ---
+        // B. Zobrazit LIN
         UpdateEnemyVisibility(linEnemy, linCameraViews, isMonitorActive);
-        
-        // --- 3. Logika: Zobrazení Lan ---
+
+        // C. Zobrazit LANA (Tady je ten problémový)
         UpdateEnemyVisibility(lanEnemy, lanCameraViews, isMonitorActive);
-        
-        // --- 4. Logika: Aktualizace Santy ---
-        // Santa nepotřebuje speciální logiku zde, protože jeho vizuál zapíná jeho ThiefScript.
-        // My jen zajistíme, že jeho skript pracuje správně s aktivitou monitoru/kamery.
+
+        // Santa se řeší sám ve svém skriptu, tady ho jen držíme v paměti
     }
-    
-    // Nová univerzální metoda pro Lin a Lan (úspora kódu a čitelnost)
+
+    // UNIVERZÁLNÍ LOGIKA PRO ZOBRAZENÍ MONSTRA
     private void UpdateEnemyVisibility(dynamic enemyScript, GameObject[] enemyViews, bool isMonitorActive)
     {
         if (enemyScript == null || enemyViews == null) return;
-        
-        // Vypni všechny vizuály nepřítele (Lin/Lan)
+
+        // 1. Nejdřív vše vypneme
         foreach (GameObject view in enemyViews)
         {
             if (view != null) view.SetActive(false);
         }
 
-        // Zkontroluj, kde je nepřítel
-        int enemyPos = enemyScript.currentPosition;
-        int camIndex = enemyPos - 1;
+        // 2. Zjistíme data
+        int enemyPos = enemyScript.currentPosition; // Kde je monstrum?
 
-        // Nepřítel je na pozici 1-5 A hráč se dívá na správnou kameru
-        if (enemyPos >= 1 && enemyPos <= 5 && enemyPos == currentCameraID)
+        // --- 🕵️‍♂️ ŠPIONÁŽNÍ VÝPIS PRO LANA ---
+        if (enemyScript.enemyName == "Lan")
         {
-            if (camIndex < enemyViews.Length && enemyViews[camIndex] != null)
+            // Pokud tohle vypíše "Lan Pos: 0", ale LanScript říká 3 -> MÁŠ ŠPATNÝ ODKAZ V INSPECTORU!
+            Debug.Log($"🕵️ [MANAGER VIDÍ]: Lan Pos: {enemyPos} | Kamera: {currentCameraID} | Monitor Active: {isMonitorActive}");
+        }
+        // -------------------------------------
+
+        // 3. Pokud je monstrum na aktuální kameře a monitor svítí -> ZAPNOUT
+        if (enemyPos == currentCameraID && isMonitorActive)
+        {
+            int viewIndex = enemyPos - 1; // Pole začíná od 0, kamery od 1
+
+            if (viewIndex < enemyViews.Length && enemyViews[viewIndex] != null)
             {
-                enemyViews[camIndex].SetActive(isMonitorActive);
-                // Debug.Log($"{enemyScript.enemyName} JE vidět na CAM {enemyPos}.");
+                enemyViews[viewIndex].SetActive(true);
+                // Debug.Log($"💡 Zapínám vizuál pro {enemyScript.enemyName} na kameře {currentCameraID}");
             }
         }
     }
 
-
     public void ActivateMonitor()
     {
-        if (cameraDisplayPanel != null)
-            cameraDisplayPanel.SetActive(true);
-
+        if (cameraDisplayPanel != null) cameraDisplayPanel.SetActive(true);
         ToggleHotspots(true);
         UpdateCameraView();
     }
 
-    /// <summary>
-    /// Zavolá se z CameraHoverZone (SKLÁPÍ MONITOR) - ZDE JE GAME OVER CHECK
-    /// </summary>
     public void DeactivateMonitor()
     {
-        // TOTO JE KLÍČOVÝ GAME OVER CHECK PRO ALEXANDRU!
+        // 1. GAME OVER CHECK (Alexandra)
         if (alexandra != null && alexandra.IsInKillState())
         {
             if (alexandra.nightManager != null)
             {
-                Debug.Log("JUMPSCARE ALEXANDRA! Monitor stažen v kill state!");
+                Debug.Log("💀 JUMPSCARE ALEXANDRA! Monitor stažen pozdě!");
                 alexandra.nightManager.GameOver(alexandra.enemyName);
-                return; // Zastaví zbytek funkce, je Game Over
+                return; // Konec hry, nic nevypínáme
             }
         }
 
-        // PŮVODNÍ LOGIKA PRO SKLOPENÍ MONITORU (pokud nenastane Game Over)
-        if (cameraDisplayPanel != null)
-            cameraDisplayPanel.SetActive(false);
-
+        // 2. Vypnutí monitoru (pokud žijeme)
+        if (cameraDisplayPanel != null) cameraDisplayPanel.SetActive(false);
         ToggleHotspots(false);
 
-        // VYPÍNÁNÍ VIZUÁLŮ (Vše, co bylo na monitoru)
-        if (linCameraViews != null)
-        {
-            foreach (GameObject view in linCameraViews)
-            {
-                if (view != null) view.SetActive(false);
-            }
-        }
-        // Vypnout i Lan
-        if (lanCameraViews != null)
-        {
-            foreach (GameObject view in lanCameraViews)
-            {
-                if (view != null) view.SetActive(false);
-            }
-        }
-
-        foreach (GameObject view in cameraViews)
-        {
-            if (view != null)
-                view.SetActive(false);
-        }
-        
-        // Poznámka: Vizuály Santy se vypnou samy přes jeho ThiefScript.UpdateVisibility()
+        // 3. Vypnutí všech vizuálů (Lin, Lan, Pozadí)
+        ResetVisuals(linCameraViews);
+        ResetVisuals(lanCameraViews);
+        ResetVisuals(cameraViews);
     }
 
     private void ToggleHotspots(bool active)
     {
-        if (cameraHotspots == null) return;
-
-        foreach (GameObject hotspot in cameraHotspots)
+        if (cameraHotspots != null)
         {
-            if (hotspot != null)
-            {
-                hotspot.SetActive(active);
-            }
+            foreach (var h in cameraHotspots) if (h != null) h.SetActive(active);
         }
     }
 }

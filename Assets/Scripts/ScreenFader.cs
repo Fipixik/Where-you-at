@@ -1,44 +1,76 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
 public class ScreenFader : MonoBehaviour
 {
-    [SerializeField] private Image fadeImage; // full-screen black UI Image
-    public float fadeDuration = 1f; // doba fade
+    [Header("Settings")]
+    public float fadeDuration = 2.0f;
 
-    private void Awake()
+    [Header("Reference")]
+    public SpriteRenderer fadeSprite;
+
+    void Start()
     {
-        if (fadeImage == null)
-        {
-            Debug.LogError("ScreenFader: Fade Image není pøiøazeno!");
-            return;
-        }
-
-        fadeImage.color = new Color(0, 0, 0, 0); // start transparent
+        if (fadeSprite == null) fadeSprite = GetComponent<SpriteRenderer>();
+        ResetFade();
     }
 
-    // Fade do èerna
     public IEnumerator FadeToBlackAndWait()
     {
-        float elapsed = 0f;
-        Color startColor = fadeImage.color;
-        Color targetColor = new Color(0, 0, 0, 1);
+        // 1. Zapneme objekt
+        this.gameObject.SetActive(true);
 
-        while (elapsed < fadeDuration)
+        // 2. Startovní stav
+        if (fadeSprite != null)
         {
-            elapsed += Time.deltaTime;
-            fadeImage.color = Color.Lerp(startColor, targetColor, elapsed / fadeDuration);
+            Color c = Color.black;
+            c.a = 0f;
+            fadeSprite.color = c;
+        }
+
+        float timer = 0f;
+
+        while (timer < fadeDuration)
+        {
+            // Používáme unscaledDeltaTime (ignoruje pauzu hry)
+            timer += Time.unscaledDeltaTime;
+
+            // Tady vypoèítáme alphu
+            float alpha = Mathf.Clamp01(timer / fadeDuration);
+
+            // --- TADY JE TEN VÝPIS DO KONZOLE ---
+            Debug.Log("Fading... Alpha: " + alpha);
+            // ------------------------------------
+
+            if (fadeSprite != null)
+            {
+                Color newColor = fadeSprite.color;
+                newColor.a = alpha;
+                fadeSprite.color = newColor;
+            }
+
             yield return null;
         }
 
-        fadeImage.color = targetColor;
+        // 3. Finální stav (èerná)
+        if (fadeSprite != null)
+        {
+            Color finalColor = fadeSprite.color;
+            finalColor.a = 1f;
+            fadeSprite.color = finalColor;
+        }
+
+        Debug.Log("Fading DOKONÈEN! Jsme na èerné.");
     }
 
-    // Reset alpha = 0
     public void ResetFade()
     {
-        if (fadeImage != null)
-            fadeImage.color = new Color(0, 0, 0, 0);
+        if (fadeSprite != null)
+        {
+            Color c = fadeSprite.color;
+            c.a = 0f;
+            fadeSprite.color = c;
+        }
+        this.gameObject.SetActive(false);
     }
 }

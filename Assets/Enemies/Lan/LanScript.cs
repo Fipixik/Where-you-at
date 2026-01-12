@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-// Důležité: Tento skript musí být na objektu Lan a musí mít přiřazený doorLock
 public class LanScript : MonoBehaviour
 {
-    public string enemyName = "Lan"; // <--- Jméno nastaveno na Lan
+    public string enemyName = "Lan";
 
     [Header("Movement Settings")]
     public float moveInterval = 6f;
@@ -15,16 +14,17 @@ public class LanScript : MonoBehaviour
     public float killTimerDuration = 4f;
 
     [Header("Visuals")]
-    public GameObject windowUI; // Vizuál upozornění před jumpscare (pokud se ukáže u dveří)
+    public GameObject windowUI; // Upozornění u dveří
 
-    // EXTERNAL REFERENCES
+    // --- EXTERNAL REFERENCES ---
     [Header("External References")]
     public CameraManager cameraManager;
-    public HoldDoorLock doorLock; // Dveřní mechanismus
+    public HoldDoorLock doorLock;
+
     [Header("Game Manager")]
     public BaseNightManager nightManager;
 
-    // Interné stavy
+    // Interní stavy
     public int currentPosition = 0;
     private bool isAwaitingKill = false;
     private bool isBlockedByPlayer = false;
@@ -34,10 +34,9 @@ public class LanScript : MonoBehaviour
 
     private void Start()
     {
-        if (windowUI != null)
-            windowUI.SetActive(false);
+        if (windowUI != null) windowUI.SetActive(false);
 
-        Debug.Log($"[{enemyName}] Start. Spúšťam Move Routine.");
+        Debug.Log($"[{enemyName}] Start. Spouštím Move Routine.");
         moveCoroutine = StartCoroutine(MoveRoutine());
     }
 
@@ -47,17 +46,14 @@ public class LanScript : MonoBehaviour
         {
             yield return new WaitForSeconds(moveInterval);
 
-            if (isBlockedByPlayer)
-            {
-                continue;
-            }
+            if (isBlockedByPlayer) continue;
 
             if (Random.Range(0, 100) < moveChance)
             {
                 int nextPos = currentPosition;
                 int pathRoll = Random.Range(0, 100);
 
-                // Používáme stejnou cestu jako Lin (0-5)
+                // Logika pohybu (stejná jako u Lin)
                 switch (currentPosition)
                 {
                     case 0: nextPos = (pathRoll < 50) ? 1 : 3; break;
@@ -74,8 +70,9 @@ public class LanScript : MonoBehaviour
                 if (nextPos != currentPosition)
                 {
                     currentPosition = nextPos;
-                    Debug.Log($"[{enemyName}] Move successful! Nová pozícia: {currentPosition}");
+                    Debug.Log($"[{enemyName}] POHYB! Nová pozice: {currentPosition}");
 
+                    // 🔥 DŮLEŽITÉ: Tady říkáme Manageru, ať aktualizuje fotky!
                     if (cameraManager != null)
                     {
                         cameraManager.UpdateCameraView();
@@ -84,7 +81,7 @@ public class LanScript : MonoBehaviour
             }
         }
 
-        Debug.Log($"[{enemyName}] Dosažená pozícia {finalKillPosition}. Spouštím kill timer.");
+        Debug.Log($"[{enemyName}] Je u dveří (Pos {finalKillPosition}).");
         moveCoroutine = null;
         killCoroutine = StartCoroutine(KillRoutine());
     }
@@ -95,23 +92,28 @@ public class LanScript : MonoBehaviour
 
         if (windowUI != null) windowUI.SetActive(true);
 
-        Debug.Log($"[{enemyName}] Čeká {killTimerDuration}s. DVEŘE MUSÍ ZŮSTAT OTEVŘENÉ!");
+        Debug.Log($"[{enemyName}] Čeká {killTimerDuration}s. Dveře musí být OTEVŘENÉ!");
         yield return new WaitForSeconds(killTimerDuration);
 
-        // KONTROLA PO VYPRŠENÍ ČASU: Dveře musí být OTEVŘENÉ
+        // KONTROLA PO VYPRŠENÍ ČASU
         if (isAwaitingKill)
         {
+            // Pokud jsou dveře OTEVŘENÉ -> Lan odchází
             if (doorLock != null && !doorLock.isDoorClosed)
             {
-                // Dveře jsou OTEVŘENÉ -> Lan odchází (DOBRÝ STAV)
-                Debug.Log($"[{enemyName}] Čekání vypršelo. Dveře OTEVŘENÉ. Utíkám z P6.");
+                Debug.Log($"[{enemyName}] ÚSPĚCH. Dveře otevřené, Lan odchází.");
 
                 isAwaitingKill = false;
                 isBlockedByPlayer = true;
-                currentPosition = 1;
+                currentPosition = 1; // Reset na pozici 1
 
+                // Vypneme UI okna
                 if (windowUI != null) windowUI.SetActive(false);
 
+                // 🔥 AKTUALIZACE KAMERY (Aby zmizel z okna i vizuálně)
+                if (cameraManager != null) cameraManager.UpdateCameraView();
+
+                // Restart pohybu
                 if (moveCoroutine == null)
                 {
                     moveCoroutine = StartCoroutine(MoveRoutine());
@@ -119,15 +121,9 @@ public class LanScript : MonoBehaviour
             }
             else
             {
-                // Dveře jsou ZAVŘENÉ po vypršení času -> Jumpscare
-                Debug.Log($"[{enemyName}]: JUMPSCARE! Dveře ZAVŘENÉ po vypršení času.");
-
-                if (windowUI != null) windowUI.SetActive(false);
-
-                if (nightManager != null)
-                {
-                    nightManager.GameOver(enemyName);
-                }
+                // Dveře jsou ZAVŘENÉ -> Smrt
+                Debug.Log($"[{enemyName}]: JUMPSCARE! Dveře byly zavřené.");
+                Jumpscare();
             }
         }
 
@@ -135,44 +131,41 @@ public class LanScript : MonoBehaviour
         killCoroutine = null;
     }
 
-    // Volá se z HoldDoorLock.cs, když hráč zavře dveře.
+    // Volá se, když hráč ZAVŘE dveře (Lan to nesnáší)
     public void DoorWasClosed()
     {
         if (isAwaitingKill)
         {
-            // Kontrola: Pokud jsou dveře ZAVŘENÉ a Lan čeká, okamžitý Jumpscare
             if (doorLock != null && doorLock.isDoorClosed)
             {
-                Debug.Log($"[{enemyName}]: 💥 JUMPSCARE OKAMŽITĚ! Dveře zavřeny, když čekala!");
-
-                if (windowUI != null) windowUI.SetActive(false);
-
-                if (killCoroutine != null)
-                {
-                    StopCoroutine(killCoroutine);
-                    killCoroutine = null;
-                }
-
-                if (nightManager != null)
-                {
-                    nightManager.GameOver(enemyName);
-                }
+                Debug.Log($"[{enemyName}]: 💥 OKAMŽITÝ JUMPSCARE! Zavřel jsi jí před nosem!");
+                Jumpscare();
             }
         }
     }
 
-    // Tato funkce se volá, když hráč odblokuje Lin (otevřením dveří), což by Lan nemělo blokovat
     public void Unblock()
     {
         if (isBlockedByPlayer)
         {
-            Debug.Log($"[{enemyName}] ODBLOKOVÁNA. Pokračuje v pohybu.");
+            Debug.Log($"[{enemyName}] Odblokována, pokračuje.");
             isBlockedByPlayer = false;
 
             if (moveCoroutine == null)
             {
                 moveCoroutine = StartCoroutine(MoveRoutine());
             }
+        }
+    }
+
+    void Jumpscare()
+    {
+        if (windowUI != null) windowUI.SetActive(false);
+        if (killCoroutine != null) StopCoroutine(killCoroutine);
+
+        if (nightManager != null)
+        {
+            nightManager.GameOver(enemyName);
         }
     }
 }
