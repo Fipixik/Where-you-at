@@ -25,7 +25,7 @@ public class Night1Manager : BaseNightManager
         // 3. LIN (Pasivní / Méně aktivní)
         if (lin != null)
         {
-            lin.moveChance = 15;      // Chodí málo
+            lin.moveChance = 35;      // Chodí málo
             lin.moveInterval = 3.0f;  // Pomalé intervaly
         }
 

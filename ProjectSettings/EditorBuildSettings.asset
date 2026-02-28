@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Nights/NightXScenes/Night1Scene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
     path: Assets/Menu/menu.unity
     guid: cb66bab8fdfa82b42a3cdd4a00f07fa8
+  - enabled: 1
+    path: Assets/Nights/StoryxScene/Story1Scene.unity
+    guid: d5ce0df0d57a7244d872f286a65e892d
+  - enabled: 1
+    path: Assets/Nights/NightXScenes/Night1Scene.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Nights/NightXScenes/Night2Scene.unity
     guid: 8ce459aba86e32643876fb6c444035f8

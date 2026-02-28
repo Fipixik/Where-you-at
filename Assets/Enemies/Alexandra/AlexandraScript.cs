@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 
@@ -12,14 +12,23 @@ public class AlexandraScript : MonoBehaviour
     [Range(0, 100)] public float progress;
     private bool isProgressing;
 
-    public GameObject windowUI; // Pùvodní vizuál progresu
+    public GameObject windowUI;
 
     [Header("External Manager")]
     public BaseNightManager nightManager;
 
-    [Header("Kill State Vizuál")]
-    public GameObject killStateUI; // <-- PØIØAÏ: Nový jumpscare vizuál
-    private bool isKillStateReached = false; // Flag pro finální stav
+    [Header("Kill State VizuÃ¡l")]
+    public GameObject killStateUI;
+    private bool isKillStateReached = false;
+
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip killStateSound;   // Zvuk, kdyÅ¾ Alexandra vyhraje (kill state)
+
+    [Space]
+    public AudioClip[] defenseSounds;  // POLE PRO TVOJE 2 ZVUKY OBRANY (kdyÅ¾ na ni klikneÅ¡)
+
+    private bool hasPlayedKillSound = false;
 
     private Collider2D myCollider;
 
@@ -28,19 +37,17 @@ public class AlexandraScript : MonoBehaviour
         myCollider = GetComponent<Collider2D>();
         if (myCollider == null)
         {
-            Debug.LogError("Chyba! AlexandraScript potøebuje Collider2D komponentu pro detekci kliku. Pøidej ji ve scénì!");
+            Debug.LogError("Chyba! AlexandraScript potÅ™ebuje Collider2D!");
         }
     }
 
     private void Start()
     {
-        if (windowUI != null)
-            windowUI.SetActive(false);
-
+        if (windowUI != null) windowUI.SetActive(false);
         progress = 0;
         isKillStateReached = false;
+        hasPlayedKillSound = false;
         if (killStateUI != null) killStateUI.SetActive(false);
-
         StartCoroutine(MoveRoutine());
     }
 
@@ -48,8 +55,6 @@ public class AlexandraScript : MonoBehaviour
     {
         return isKillStateReached;
     }
-
-    // TATO FUNKCE ZAPNE VIZUÁL AŽ PØED GAME OVER
 
     private void Update()
     {
@@ -74,13 +79,8 @@ public class AlexandraScript : MonoBehaviour
 
             if (roll < moveChance && !isKillStateReached)
             {
-                Debug.Log($"{enemyName}: Chance success! Starting progress.");
                 if (!isProgressing)
                     StartCoroutine(ProgressRoutine());
-            }
-            else
-            {
-                Debug.Log($"{enemyName}: Chance failed.");
             }
         }
     }
@@ -88,46 +88,54 @@ public class AlexandraScript : MonoBehaviour
     IEnumerator ProgressRoutine()
     {
         isProgressing = true;
-
-        if (windowUI != null)
-            windowUI.SetActive(true);
-
+        if (windowUI != null) windowUI.SetActive(true);
         float speed = moveChance / 10f;
 
         while (progress < killProgress && isProgressing)
         {
             progress += speed * Time.deltaTime;
-            Debug.Log($"{enemyName}: Progress {progress}/{killProgress}");
             yield return null;
         }
 
-        // TOTO JE FINÁLNÍ ZMÌNA LOGIKY: Nastavení flagu PØED ukonèením rutiny
         if (progress >= killProgress)
         {
             isKillStateReached = true;
-            killStateUI.SetActive(true);
-            Debug.Log($"{enemyName}: Kill progress reached! Finální hrozba je aktivní a èeká na stáhnutí monitoru.");
+            if (killStateUI != null) killStateUI.SetActive(true);
+
+            if (!hasPlayedKillSound && audioSource != null && killStateSound != null)
+            {
+                audioSource.PlayOneShot(killStateSound);
+                hasPlayedKillSound = true;
+            }
         }
 
         isProgressing = false;
-
-        if (windowUI != null)
-            windowUI.SetActive(false);
+        if (windowUI != null) windowUI.SetActive(false);
     }
 
     private void HandlePlayerClick()
     {
         if (isKillStateReached)
         {
-            Debug.Log($"{enemyName}: Alexandra je v kill state. Kliknutí nefunguje.");
+            Debug.Log($"{enemyName}: Alexandra je v kill state. KliknutÃ­ uÅ¾ nepomÅ¯Å¾e.");
         }
-        else // FÁZE 1: BÌŽNÝ PROGRES - Obrana funguje (Pøed 100%)
+        else
         {
-            Debug.Log($"{enemyName}: Progress paused by player. (KLIK ZAREGISTROVÁN)");
+            // --- LOGIKA PRO NÃHODNÃ ZVUK OBRANY ---
+            if (audioSource != null && defenseSounds != null && defenseSounds.Length > 0)
+            {
+                // Vybere nÃ¡hodnÃ½ index z pole (0 nebo 1, pokud tam dÃ¡Å¡ dva zvuky)
+                int randomIndex = Random.Range(0, defenseSounds.Length);
+                audioSource.PlayOneShot(defenseSounds[randomIndex]);
+            }
+            // --------------------------------------
+
+            Debug.Log($"{enemyName}: ZahÃ¡nÃ­me Alexandru nÃ¡hodnÃ½m zvukem!");
             isProgressing = false;
+            progress = 0;
+            hasPlayedKillSound = false;
         }
 
-        if (windowUI != null)
-            windowUI.SetActive(false);
+        if (windowUI != null) windowUI.SetActive(false);
     }
 }

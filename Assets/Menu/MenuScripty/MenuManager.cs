@@ -19,17 +19,20 @@ public class MenuManager : MonoBehaviour
 
             PlayerPrefs.SetInt("CurrentNight", 1);
             PlayerPrefs.Save();
-            savedNight = 1;
-            Debug.Log("Starting New Game (Night 1)");
+
+            Debug.Log("Starting New Game -> Loading StoryScene1");
+
+            // Když je to nová hra, jdeme nejdřív do příběhu
+            SceneManager.LoadScene("Story1Scene");
         }
         else
         {
             Debug.Log("Continuing Game (Night " + savedNight + ")");
-        }
 
-        // načte správnou scénu podle noci
-        string nightScene = "Night" + savedNight + "Scene";
-        SceneManager.LoadScene(nightScene);
+            // Pokud hráč pokračuje, story vynecháme a hodíme ho rovnou do scény té noci
+            string nightScene = "Night" + savedNight + "Scene";
+            SceneManager.LoadScene(nightScene);
+        }
     }
 
     public void ExitGame()

@@ -6,16 +6,19 @@ using UnityEngine.InputSystem;
 public abstract class BaseNightManager : MonoBehaviour
 {
     [Header("--- NASTAVENÍ ÈASU (Base) ---")]
-    public float lengthOfNight = 60f;   // Délka noci ve vteøinách
+    public float lengthOfNight = 60f;
 
-    // TADY JE ZMÌNA: Pole objektù místo Spritù
     [Tooltip("Sem naházej objekty hodin: Index 0 = 7am, Index 1 = 8am...")]
-    public GameObject[] hourObjects;    // 5 objektù ve scénì (7, 8, 9, 10, 11)
+    public GameObject[] hourObjects;
 
     [Header("--- SYSTÉM SMRTI A VÝHRY ---")]
     public GameObject blackoutSprite;
     public GameObject cameraUIButton;
     public ScreenFader screenFader;
+
+    [Header("--- JUMPSCARE AUDIO ---")]
+    public AudioSource audioSource;      // Komponenta AudioSource
+    public AudioClip jumpscareSound;     // Ten hnusnej zvuk jumpscaru
 
     [Header("--- DEATH TIPS ---")]
     public GameObject alexandraTipObject;
@@ -30,8 +33,10 @@ public abstract class BaseNightManager : MonoBehaviour
     protected virtual void Start()
     {
         timer = 0f;
-        // Na zaèátku ruènì zavoláme update, aby se zapla sedmièka a zbytek vypnul
         UpdateClockDisplay();
+
+        // Automaticky zkusíme najít AudioSource, pokud není pøiøazen
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
     protected virtual void Update()
@@ -44,11 +49,8 @@ public abstract class BaseNightManager : MonoBehaviour
         if (gameEnded) return;
 
         timer += Time.deltaTime;
-
-        // Aktualizujeme hodiny (pøepínání objektù)
         UpdateClockDisplay();
 
-        // Kontrola výhry (12 PM)
         if (timer >= lengthOfNight)
         {
             gameEnded = true;
@@ -58,39 +60,33 @@ public abstract class BaseNightManager : MonoBehaviour
 
     private void UpdateClockDisplay()
     {
-        // Pokud nemáš nastavené objekty, nic nedìlej
         if (hourObjects == null || hourObjects.Length == 0) return;
 
-        // 1. Spoèítáme, která "hodina" právì bìží (index 0 až 4)
         float hourDuration = lengthOfNight / 5.0f;
         int currentIndex = Mathf.FloorToInt(timer / hourDuration);
-
-        // Pojistka, abychom nepøetekli (zùstaneme na poslední hodinì tìsnì pøed výhrou)
         currentIndex = Mathf.Clamp(currentIndex, 0, hourObjects.Length - 1);
 
-        // 2. Projdeme všechny objekty hodin
         for (int i = 0; i < hourObjects.Length; i++)
         {
             if (hourObjects[i] != null)
             {
-                // Pokud se index rovná aktuální hodinì -> ZAPNOUT. Jinak -> VYPNOUT.
-                if (i == currentIndex)
-                {
-                    hourObjects[i].SetActive(true);
-                }
-                else
-                {
-                    hourObjects[i].SetActive(false);
-                }
+                hourObjects[i].SetActive(i == currentIndex);
             }
         }
     }
 
-    // --- ZBYTEK KÓDU (SMRT, VÝHRA) ZÙSTÁVÁ STEJNÝ ---
-
     public virtual void GameOver(string killerName)
     {
+        if (gameEnded) return; // Aby se jumpscare nespustil víckrát
         gameEnded = true;
+
+        // --- ZDE SE SPOUŠTÍ JUMPSCARE ZVUK ---
+        if (audioSource != null && jumpscareSound != null)
+        {
+            audioSource.PlayOneShot(jumpscareSound);
+        }
+        // ------------------------------------
+
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
         StopAllCoroutines();
         StartCoroutine(DeathSequence(killerName));
@@ -98,6 +94,7 @@ public abstract class BaseNightManager : MonoBehaviour
 
     private IEnumerator DeathSequence(string killerName)
     {
+        // Poèkáme chvíli, než se ukáže jumpscare vizuál (pokud ho máš ve skriptech monster)
         yield return new WaitForSeconds(2.0f);
 
         if (screenFader != null)
@@ -126,7 +123,7 @@ public abstract class BaseNightManager : MonoBehaviour
 
     public IEnumerator WinSequence()
     {
-        Debug.Log("?? VÝHRA! 6:00 AM");
+        Debug.Log("VÝHRA! 6:00 AM");
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
 
         if (screenFader != null)
