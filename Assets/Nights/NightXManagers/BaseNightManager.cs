@@ -7,18 +7,23 @@ public abstract class BaseNightManager : MonoBehaviour
 {
     [Header("--- NASTAVENÍ ÈASU (Base) ---")]
     public float lengthOfNight = 60f;
-
-    [Tooltip("Sem naházej objekty hodin: Index 0 = 7am, Index 1 = 8am...")]
     public GameObject[] hourObjects;
+
+    [Header("--- MUSICAL STRESS ---")]
+    public AudioSource backgroundMusic;
+    public float startPitch = 1.0f;
+    public float maxPitch = 1.5f;
 
     [Header("--- SYSTÉM SMRTI A VÝHRY ---")]
     public GameObject blackoutSprite;
     public GameObject cameraUIButton;
     public ScreenFader screenFader;
+    // PØIDÁNO: Reference na camera manager pro totální vypnutí
+    public CameraManager cameraManager;
 
     [Header("--- JUMPSCARE AUDIO ---")]
-    public AudioSource audioSource;      // Komponenta AudioSource
-    public AudioClip jumpscareSound;     // Ten hnusnej zvuk jumpscaru
+    public AudioSource jumpscareSource;
+    public AudioClip jumpscareSound;
 
     [Header("--- DEATH TIPS ---")]
     public GameObject alexandraTipObject;
@@ -35,8 +40,16 @@ public abstract class BaseNightManager : MonoBehaviour
         timer = 0f;
         UpdateClockDisplay();
 
-        // Automaticky zkusíme najít AudioSource, pokud není pøiøazen
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+        if (jumpscareSource == null) jumpscareSource = GetComponent<AudioSource>();
+
+        // Zkusíme najít CameraManager, pokud jsi ho zapomnìla pøiøadit
+        if (cameraManager == null) cameraManager = FindObjectOfType<CameraManager>();
+
+        if (backgroundMusic != null)
+        {
+            backgroundMusic.pitch = startPitch;
+            if (!backgroundMusic.isPlaying) backgroundMusic.Play();
+        }
     }
 
     protected virtual void Update()
@@ -51,6 +64,12 @@ public abstract class BaseNightManager : MonoBehaviour
         timer += Time.deltaTime;
         UpdateClockDisplay();
 
+        if (backgroundMusic != null && timer <= lengthOfNight)
+        {
+            float progress = timer / lengthOfNight;
+            backgroundMusic.pitch = Mathf.Lerp(startPitch, maxPitch, progress);
+        }
+
         if (timer >= lengthOfNight)
         {
             gameEnded = true;
@@ -61,40 +80,43 @@ public abstract class BaseNightManager : MonoBehaviour
     private void UpdateClockDisplay()
     {
         if (hourObjects == null || hourObjects.Length == 0) return;
-
         float hourDuration = lengthOfNight / 5.0f;
         int currentIndex = Mathf.FloorToInt(timer / hourDuration);
         currentIndex = Mathf.Clamp(currentIndex, 0, hourObjects.Length - 1);
 
         for (int i = 0; i < hourObjects.Length; i++)
         {
-            if (hourObjects[i] != null)
-            {
-                hourObjects[i].SetActive(i == currentIndex);
-            }
+            if (hourObjects[i] != null) hourObjects[i].SetActive(i == currentIndex);
         }
     }
 
     public virtual void GameOver(string killerName)
     {
-        if (gameEnded) return; // Aby se jumpscare nespustil víckrát
+        if (gameEnded) return;
         gameEnded = true;
 
-        // --- ZDE SE SPOUŠTÍ JUMPSCARE ZVUK ---
-        if (audioSource != null && jumpscareSound != null)
-        {
-            audioSource.PlayOneShot(jumpscareSound);
-        }
-        // ------------------------------------
+        if (backgroundMusic != null) backgroundMusic.Stop();
 
+        if (jumpscareSource != null && jumpscareSound != null)
+        {
+            jumpscareSource.PlayOneShot(jumpscareSound);
+        }
+
+        // --- FIX PRO TLAÈÍTKO A KAMERY ---
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
+
+        // Vypneme celý displej kamer, aby tì to "vyhodilo" do kanclu k jumpscaru
+        if (cameraManager != null && cameraManager.cameraDisplayPanel != null)
+        {
+            cameraManager.cameraDisplayPanel.SetActive(false);
+        }
+
         StopAllCoroutines();
         StartCoroutine(DeathSequence(killerName));
     }
 
     private IEnumerator DeathSequence(string killerName)
     {
-        // Poèkáme chvíli, než se ukáže jumpscare vizuál (pokud ho máš ve skriptech monster)
         yield return new WaitForSeconds(2.0f);
 
         if (screenFader != null)
@@ -123,7 +145,7 @@ public abstract class BaseNightManager : MonoBehaviour
 
     public IEnumerator WinSequence()
     {
-        Debug.Log("VÝHRA! 6:00 AM");
+        if (backgroundMusic != null) backgroundMusic.Stop();
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
 
         if (screenFader != null)

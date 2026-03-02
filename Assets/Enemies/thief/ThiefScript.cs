@@ -15,13 +15,21 @@ public class ThiefScript : MonoBehaviour
     [Header("Visuals (5 pozic)")]
     public GameObject[] santaPoses;
 
+    [Header("--- ZVUKY: ALARM ---")]
+    public AudioSource alertAudioSource; // AudioSource pro pípání (nastav mu Loop!)
+    public AudioClip alertSound;         // Ten zvuk notifikace
+
+    [Header("--- ZVUKY: ZAHÁNĚNÍ (RANDOM) ---")]
+    public AudioSource repelAudioSource; // AudioSource pro rány/křik
+    public AudioClip[] repelSounds;      // Pole zvuků, co se náhodně protočí
+
     [Header("Managers")]
     public BaseNightManager nightManager;
     public CameraManager cameraManager;
 
     // --- INTERNÍ STAVY ---
     private bool isActive = false;
-    private int activeCameraIndex = -1; // 0 až 4
+    private int activeCameraIndex = -1;
     private float timer = 0f;
 
     private void Start()
@@ -37,17 +45,25 @@ public class ThiefScript : MonoBehaviour
         {
             timer += Time.deltaTime;
 
-            // 1. UPDATE VIZUÁLU
+            // 1. UPDATE VIZUÁLU (Zobrazí se na správné kameře)
             UpdateVisibility();
 
-            // 2. KONTROLA ČASU (Smrt)
+            // 2. AKTIVACE ZVUKU ALARMU
+            if (alertAudioSource != null && alertSound != null && !alertAudioSource.isPlaying)
+            {
+                alertAudioSource.clip = alertSound;
+                alertAudioSource.loop = true;
+                alertAudioSource.Play();
+            }
+
+            // 3. KONTROLA SMRTI
             if (timer >= killTimerDuration)
             {
                 Debug.Log("[ThiefScript] ⏳ Čas vypršel!");
                 Jumpscare();
             }
 
-            // 3. KONTROLA KLIKNUTÍ
+            // 4. KLIK CHECK
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 CheckClick();
@@ -59,13 +75,10 @@ public class ThiefScript : MonoBehaviour
     {
         if (cameraManager == null || activeCameraIndex == -1) return;
 
-        // Zjistíme, jestli je monitor nahoře (podle toho panelu v CameraManageru)
         bool isMonitorOn = cameraManager.cameraDisplayPanel != null && cameraManager.cameraDisplayPanel.activeInHierarchy;
-
-        // Zjistíme, na jakou kameru se koukáme (1-5)
         int currentCam = cameraManager.currentCameraID;
 
-        // Santa má být vidět JENOM KDYŽ: (Monitor je ON) A (Kamera je ta správná)
+        // Santa je vidět jen když je zapnutý monitor a hráč kouká na správnou kameru
         bool shouldBeVisible = isMonitorOn && (currentCam == activeCameraIndex + 1);
 
         if (santaPoses[activeCameraIndex] != null)
@@ -98,7 +111,6 @@ public class ThiefScript : MonoBehaviour
         activeCameraIndex = Random.Range(0, santaPoses.Length);
 
         Debug.Log($"🚨 [ThiefScript] SPAWN! {enemyName} je na kameře {activeCameraIndex + 1}");
-        // Vizuál se zapne sám v UpdateVisibility()
     }
 
     void CheckClick()
@@ -111,7 +123,6 @@ public class ThiefScript : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // Klikl hráč na aktivní sprite Santy? (A je Santa zrovna vidět?)
             if (hit.collider.gameObject == santaPoses[activeCameraIndex] && santaPoses[activeCameraIndex].activeSelf)
             {
                 SantaRepelled();
@@ -122,17 +133,23 @@ public class ThiefScript : MonoBehaviour
     void SantaRepelled()
     {
         Debug.Log($"✅ [ThiefScript] {enemyName} ÚSPĚŠNĚ ZAHNÁN!");
+
+        // PŘEHRÁNÍ NÁHODNÉHO ZVUKU PŘI ZAHÁNĚNÍ
+        if (repelAudioSource != null && repelSounds.Length > 0)
+        {
+            AudioClip randomClip = repelSounds[Random.Range(0, repelSounds.Length)];
+            repelAudioSource.PlayOneShot(randomClip);
+        }
+
         ResetSanta();
     }
 
     void Jumpscare()
     {
-        // Tady se spouští Game Over sekvence.
         if (nightManager != null)
         {
             nightManager.GameOver(enemyName);
         }
-        // V NightManager.cs musí být ošetřená animace fade-outu.
 
         ResetSanta();
     }
@@ -143,10 +160,13 @@ public class ThiefScript : MonoBehaviour
         activeCameraIndex = -1;
         timer = 0f;
 
-        // Vypni všechny vizuály pro jistotu
+        // Vypnutí alarmu
+        if (alertAudioSource != null) alertAudioSource.Stop();
+
+        // Vypnutí všech póz
         foreach (var pose in santaPoses)
         {
             if (pose != null) pose.SetActive(false);
         }
     }
-}
+} //
