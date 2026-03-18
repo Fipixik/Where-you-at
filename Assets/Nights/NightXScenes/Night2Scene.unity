@@ -2395,7 +2395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &765113934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3357,7 +3357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1026995951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3573,7 +3573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1168159187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3657,7 +3657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7ac13c2c61ee654b91c9d8a00e2b69c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Night2Manager
-  lengthOfNight: 60
+  lengthOfNight: 5
   hourObjects:
   - {fileID: 1757084009}
   - {fileID: 1864208687}
@@ -3670,13 +3670,19 @@ MonoBehaviour:
   blackoutSprite: {fileID: 1983273437}
   cameraUIButton: {fileID: 1749711158}
   screenFader: {fileID: 1983273439}
-  cameraManager: {fileID: 0}
+  cameraManager: {fileID: 1965045059}
+  winSound: {fileID: 0}
+  winScreenObject: {fileID: 0}
+  winCameraPosition: {x: 0, y: 0, z: 0}
+  winCameraRotation: {x: 0, y: 0, z: 0}
   jumpscareSource: {fileID: 0}
   jumpscareSound: {fileID: 8300000, guid: be205ce6e9336e24b96772b7b6297fb2, type: 3}
   alexandraTipObject: {fileID: 333135898}
   linTipObject: {fileID: 22399211}
   santaTipObject: {fileID: 657449986}
   lanTipObject: {fileID: 161150785}
+  catTipObject: {fileID: 0}
+  homuraTipObject: {fileID: 0}
   alexandra: {fileID: 1274536071}
   lin: {fileID: 1168159187}
   lan: {fileID: 1026995951}
@@ -4176,7 +4182,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1274536071
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -18,8 +18,13 @@ public abstract class BaseNightManager : MonoBehaviour
     public GameObject blackoutSprite;
     public GameObject cameraUIButton;
     public ScreenFader screenFader;
-    // PØIDÁNO: Reference na camera manager pro totální vypnutí
     public CameraManager cameraManager;
+
+    [Header("--- WIN SETTINGS ---")]
+    public AudioClip winSound;
+    public GameObject winScreenObject;
+    // Souøadnice natvrdo: -25, 0, -10
+    private Vector3 winPos = new Vector3(-25f, 0f, -10f);
 
     [Header("--- JUMPSCARE AUDIO ---")]
     public AudioSource jumpscareSource;
@@ -30,6 +35,8 @@ public abstract class BaseNightManager : MonoBehaviour
     public GameObject linTipObject;
     public GameObject santaTipObject;
     public GameObject lanTipObject;
+    public GameObject catTipObject;
+    public GameObject homuraTipObject;
 
     protected float timer = 0f;
     protected bool gameEnded = false;
@@ -37,12 +44,10 @@ public abstract class BaseNightManager : MonoBehaviour
 
     protected virtual void Start()
     {
+        Time.timeScale = 1f;
         timer = 0f;
         UpdateClockDisplay();
-
         if (jumpscareSource == null) jumpscareSource = GetComponent<AudioSource>();
-
-        // Zkusíme najít CameraManager, pokud jsi ho zapomnìla pøiøadit
         if (cameraManager == null) cameraManager = FindObjectOfType<CameraManager>();
 
         if (backgroundMusic != null)
@@ -56,6 +61,7 @@ public abstract class BaseNightManager : MonoBehaviour
     {
         if (canClickToMenu && Mouse.current.leftButton.wasPressedThisFrame)
         {
+            Time.timeScale = 1f;
             SceneManager.LoadScene("Menu");
         }
 
@@ -80,7 +86,7 @@ public abstract class BaseNightManager : MonoBehaviour
     private void UpdateClockDisplay()
     {
         if (hourObjects == null || hourObjects.Length == 0) return;
-        float hourDuration = lengthOfNight / 5.0f;
+        float hourDuration = lengthOfNight / 6.0f;
         int currentIndex = Mathf.FloorToInt(timer / hourDuration);
         currentIndex = Mathf.Clamp(currentIndex, 0, hourObjects.Length - 1);
 
@@ -94,31 +100,21 @@ public abstract class BaseNightManager : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
+        Time.timeScale = 0f;
 
         if (backgroundMusic != null) backgroundMusic.Stop();
+        if (jumpscareSource != null && jumpscareSound != null) jumpscareSource.PlayOneShot(jumpscareSound);
 
-        if (jumpscareSource != null && jumpscareSound != null)
-        {
-            jumpscareSource.PlayOneShot(jumpscareSound);
-        }
-
-        // --- FIX PRO TLAÈÍTKO A KAMERY ---
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
-
-        // Vypneme celý displej kamer, aby tì to "vyhodilo" do kanclu k jumpscaru
         if (cameraManager != null && cameraManager.cameraDisplayPanel != null)
-        {
             cameraManager.cameraDisplayPanel.SetActive(false);
-        }
 
-        StopAllCoroutines();
-        StartCoroutine(DeathSequence(killerName));
+        StartCoroutine(DeathSequenceRealtime(killerName));
     }
 
-    private IEnumerator DeathSequence(string killerName)
+    private IEnumerator DeathSequenceRealtime(string killerName)
     {
-        yield return new WaitForSeconds(2.0f);
-
+        yield return new WaitForSecondsRealtime(3.0f);
         if (screenFader != null)
         {
             screenFader.enabled = true;
@@ -129,24 +125,56 @@ public abstract class BaseNightManager : MonoBehaviour
             blackoutSprite.SetActive(true);
         }
 
-        yield return new WaitForSeconds(1.0f);
         ShowTipObject(killerName);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.8f);
         canClickToMenu = true;
     }
 
-    private void ShowTipObject(string killer)
+    protected virtual void ShowTipObject(string killer)
     {
         if (killer == "Alexandra" && alexandraTipObject != null) alexandraTipObject.SetActive(true);
         else if (killer == "Lin" && linTipObject != null) linTipObject.SetActive(true);
         else if (killer == "Lan" && lanTipObject != null) lanTipObject.SetActive(true);
         else if (killer == "Evil Santa" && santaTipObject != null) santaTipObject.SetActive(true);
+        else if (killer == "Cat" && catTipObject != null) catTipObject.SetActive(true);
+        else if (killer == "Homura" && homuraTipObject != null) homuraTipObject.SetActive(true);
     }
 
     public IEnumerator WinSequence()
     {
+        Debug.Log("--- WIN! 6 AM Reached ---");
         if (backgroundMusic != null) backgroundMusic.Stop();
+
+        // 1. Vypnutí ovládání
+        if (cameraManager != null)
+        {
+            cameraManager.enabled = false;
+            if (cameraManager.cameraDisplayPanel != null) cameraManager.cameraDisplayPanel.SetActive(false);
+        }
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
+
+        // 2. Teleport na tvoje souøadnice
+        Camera mainCam = Camera.main;
+        if (mainCam != null)
+        {
+            mainCam.transform.position = winPos;
+            mainCam.transform.rotation = Quaternion.Euler(0, 0, 0); // Kouká rovnì
+        }
+
+        // 3. Efekty
+        if (jumpscareSource != null && winSound != null) jumpscareSource.PlayOneShot(winSound);
+        if (winScreenObject != null) winScreenObject.SetActive(true);
+
+        // 4. Save progress
+        int thisNightNumber = 3;
+        int alreadySaved = PlayerPrefs.GetInt("SavedNight", 1);
+        if (thisNightNumber >= alreadySaved)
+        {
+            PlayerPrefs.SetInt("SavedNight", thisNightNumber + 1);
+            PlayerPrefs.Save();
+        }
+
+        yield return new WaitForSeconds(5.0f);
 
         if (screenFader != null)
         {
@@ -154,7 +182,6 @@ public abstract class BaseNightManager : MonoBehaviour
             yield return StartCoroutine(screenFader.FadeToBlackAndWait());
         }
 
-        yield return new WaitForSeconds(1.0f);
         SceneManager.LoadScene("Menu");
     }
 }
