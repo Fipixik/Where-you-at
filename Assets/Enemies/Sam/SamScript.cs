@@ -8,21 +8,25 @@ public class SamScript : MonoBehaviour
     public class Drawer
     {
         public string name;
-        public GameObject clickCollider;    // Na co hráč kliká
-        public GameObject emptyOpenedVisual; // Otevřený prázdný šuplík
-        public GameObject itemOpenedVisual;  // Otevřený šuplík s věcmi
+        public GameObject clickCollider;
+        public GameObject emptyOpenedVisual;
+        public GameObject itemOpenedVisual;
     }
 
     [Header("Nastavení šancí")]
-    public float checkInterval = 10f; // Y vteřin
-    [Range(0, 100)] public float appearanceChance = 20f; // X šance
-    public float timeToFind = 15f; // Z vteřin na nalezení
+    public float checkInterval = 10f;
+    [Range(0, 100)] public float appearanceChance = 20f;
+    public float timeToFind = 15f;
+
+    [Header("Vizuály Sama")]
+    public GameObject samSpriteObject;
+    public GameObject jumpscareObject;
+    public GameObject darkenerObject; // TVŮJ DARKENER/BLACKOUT ČTVEREC
 
     [Header("Šuplíky (přiřaď všech 12)")]
     public List<Drawer> drawers = new List<Drawer>();
 
-    [Header("Jumpscare")]
-    public GameObject jumpscareObject;
+    [Header("Audio")]
     public AudioClip jumpscareSound;
 
     [Header("Reference")]
@@ -31,95 +35,76 @@ public class SamScript : MonoBehaviour
     private int targetDrawerIndex = -1;
     private bool isSamActive = false;
     private bool isDead = false;
+    private bool isInSuccessSequence = false;
 
     void Start()
     {
         if (nightManager == null) nightManager = Object.FindFirstObjectByType<BaseNightManager>();
-
-        // Vše schovat na startu
-        foreach (var d in drawers)
-        {
-            if (d.emptyOpenedVisual != null) d.emptyOpenedVisual.SetActive(false);
-            if (d.itemOpenedVisual != null) d.itemOpenedVisual.SetActive(false);
-        }
-        if (jumpscareObject != null) jumpscareObject.SetActive(false);
-
+        FullReset();
         InvokeRepeating("TryActivateSam", checkInterval, checkInterval);
     }
 
     void TryActivateSam()
     {
-        if (isSamActive || isDead || nightManager == null) return;
-
-        if (Random.Range(0f, 100f) <= appearanceChance)
-        {
-            ActivateSam();
-        }
+        if (isSamActive || isDead || isInSuccessSequence) return;
+        if (Random.Range(0f, 100f) <= appearanceChance) ActivateSam();
     }
 
     void ActivateSam()
     {
         isSamActive = true;
         targetDrawerIndex = Random.Range(0, drawers.Count);
-        Debug.Log("<color=purple>SAM: Aktivní! Hledá věci v šuplíku: " + drawers[targetDrawerIndex].name + "</color>");
-
+        if (samSpriteObject != null) samSpriteObject.SetActive(true);
         StartCoroutine(SamTimer());
     }
 
     IEnumerator SamTimer()
     {
         yield return new WaitForSeconds(timeToFind);
+        if (isSamActive && !isDead && !isInSuccessSequence) StartCoroutine(PerformJumpscare());
+    }
 
-        if (isSamActive && !isDead)
+    public void PlayerClickedDrawer(GameObject clickedObject)
+    {
+        if (isDead) return;
+
+        if (isSamActive && !isInSuccessSequence)
+        {
+            for (int i = 0; i < drawers.Count; i++)
+            {
+                if (drawers[i].clickCollider == clickedObject)
+                {
+                    if (i == targetDrawerIndex) StartCoroutine(SuccessSequence(i));
+                    else if (drawers[i].emptyOpenedVisual != null) drawers[i].emptyOpenedVisual.SetActive(true);
+                    return;
+                }
+            }
+        }
+        else if (isInSuccessSequence)
         {
             StartCoroutine(PerformJumpscare());
         }
     }
 
-    // Tuto funkci zavoláme skrze pomocný skript na každém šuplíku
-    public void PlayerClickedDrawer(GameObject clickedObject)
-    {
-        if (!isSamActive || isDead) return;
-
-        for (int i = 0; i < drawers.Count; i++)
-        {
-            if (drawers[i].clickCollider == clickedObject)
-            {
-                if (i == targetDrawerIndex)
-                {
-                    // TREFIL TO!
-                    Debug.Log("<color=cyan>SAM: Hráč našel správný šuplík!</color>");
-                    StartCoroutine(SuccessSequence(i));
-                }
-                else
-                {
-                    // ŠPATNÝ ŠUPLÍK
-                    Debug.Log("SAM: Špatný šuplík (" + drawers[i].name + "), hledej dál.");
-                    if (drawers[i].emptyOpenedVisual != null) drawers[i].emptyOpenedVisual.SetActive(true);
-                }
-                break;
-            }
-        }
-    }
-
     IEnumerator SuccessSequence(int index)
     {
-        isSamActive = false; // Sam je pryč
-
-        // Ukážeme šuplík s věcmi
+        isSamActive = false;
+        isInSuccessSequence = true;
+        if (samSpriteObject != null) samSpriteObject.SetActive(false);
         if (drawers[index].itemOpenedVisual != null) drawers[index].itemOpenedVisual.SetActive(true);
-
         yield return new WaitForSeconds(3.0f);
+        if (!isDead) { FullReset(); isInSuccessSequence = false; }
+    }
 
-        // Po 3s vše smazat (schovat)
+    void FullReset()
+    {
         foreach (var d in drawers)
         {
             if (d.emptyOpenedVisual != null) d.emptyOpenedVisual.SetActive(false);
             if (d.itemOpenedVisual != null) d.itemOpenedVisual.SetActive(false);
         }
-
-        targetDrawerIndex = -1;
-        Debug.Log("SAM: Všechny šuplíky zavřeny, Sam resetován.");
+        if (samSpriteObject != null) samSpriteObject.SetActive(false);
+        if (jumpscareObject != null) jumpscareObject.SetActive(false);
     }
 
     IEnumerator PerformJumpscare()
@@ -131,6 +116,10 @@ public class SamScript : MonoBehaviour
         if (source != null && jumpscareSound != null) source.PlayOneShot(jumpscareSound);
 
         yield return new WaitForSecondsRealtime(1.5f);
+
+        // KLÍČOVÝ FIX: Vypneme darkener před zobrazením tipu
+        if (darkenerObject != null) darkenerObject.SetActive(false);
+
         nightManager.GameOver("Sam");
     }
 }

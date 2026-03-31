@@ -1,0 +1,676 @@
+fileFormatVersion: 2
+guid: edce9e7de4fea9c4eb44ddac89a1e71c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4315470217405992769
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_0
+  - first:
+      213: 9142918475383380157
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_1
+  - first:
+      213: -3504024671872996908
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_2
+  - first:
+      213: -3133804579371273641
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_3
+  - first:
+      213: 6725599596041613185
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_4
+  - first:
+      213: -377314495222330943
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_5
+  - first:
+      213: -3861596129574525731
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_6
+  - first:
+      213: -5896752681833774092
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_7
+  - first:
+      213: 4418664330888878694
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_8
+  - first:
+      213: -320482277011011100
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_9
+  - first:
+      213: 7574551446405684972
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_10
+  - first:
+      213: -6225544956833036180
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_11
+  - first:
+      213: -3322071073868027415
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_12
+  - first:
+      213: 8116973342959035088
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_13
+  - first:
+      213: -4185234927265141646
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_14
+  - first:
+      213: -7658995016044664510
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_15
+  - first:
+      213: 5787761740063036272
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_16
+  - first:
+      213: -4303202121035067066
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_17
+  - first:
+      213: -2887613959913904003
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_18
+  - first:
+      213: 579694461883257538
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_19
+  - first:
+      213: -2601855520128494539
+    second: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_0
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 946
+        width: 248
+        height: 247
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14f03436c41a3eb30800000000000000
+      internalID: 4315470217405992769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_1
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 1110
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db8159f79eb22ee70800000000000000
+      internalID: 9142918475383380157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_2
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 1057
+        width: 38
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d92ec440243f5fc0800000000000000
+      internalID: -3504024671872996908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_3
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 946
+        width: 248
+        height: 247
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7523513b65d7284d0800000000000000
+      internalID: -3133804579371273641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_4
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 1059
+        width: 44
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18f2297e231265d50800000000000000
+      internalID: 6725599596041613185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_5
+      rect:
+        serializedVersion: 2
+        x: 1085
+        y: 1090
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c9caa7377283caf0800000000000000
+      internalID: -377314495222330943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_6
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 155
+        width: 1182
+        height: 925
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd4efae97cad86ac0800000000000000
+      internalID: -3861596129574525731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_7
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 1045
+        width: 23
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f347fe9da68a2ea0800000000000000
+      internalID: -5896752681833774092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_8
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 1065
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a12504ccf325d30800000000000000
+      internalID: 4418664330888878694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_9
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 1065
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e943f9211b6d8bf0800000000000000
+      internalID: -320482277011011100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_10
+      rect:
+        serializedVersion: 2
+        x: 1047
+        y: 1045
+        width: 23
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cee9ee7a8663e1960800000000000000
+      internalID: 7574551446405684972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_11
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 1065
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c680eba98db6a99a0800000000000000
+      internalID: -6225544956833036180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_12
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 127
+        width: 52
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e9ee7b95f1a5e1d0800000000000000
+      internalID: -3322071073868027415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_13
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 13
+        width: 265
+        height: 254
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d26366ff3845a070800000000000000
+      internalID: 8116973342959035088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_14
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 152
+        width: 10
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27cadca020f0be5c0800000000000000
+      internalID: -4185234927265141646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_15
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 127
+        width: 52
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 249ab2cac98c5b590800000000000000
+      internalID: -7658995016044664510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_16
+      rect:
+        serializedVersion: 2
+        x: 933
+        y: 13
+        width: 255
+        height: 254
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 073dd0143a2425050800000000000000
+      internalID: 5787761740063036272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_17
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 67
+        width: 42
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6415ff26874f744c0800000000000000
+      internalID: -4303202121035067066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_18
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 98
+        width: 41
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d786fd617622de7d0800000000000000
+      internalID: -2887613959913904003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_19
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 67
+        width: 42
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c210deaa0d7b0800800000000000000
+      internalID: 579694461883257538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_20
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 98
+        width: 41
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5341add803a54ebd0800000000000000
+      internalID: -2601855520128494539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_0: 4315470217405992769
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_1: 9142918475383380157
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_10: 7574551446405684972
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_11: -6225544956833036180
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_12: -3322071073868027415
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_13: 8116973342959035088
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_14: -4185234927265141646
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_15: -7658995016044664510
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_16: 5787761740063036272
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_17: -4303202121035067066
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_18: -2887613959913904003
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_19: 579694461883257538
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_2: -3504024671872996908
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_20: -2601855520128494539
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_3: -3133804579371273641
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_4: 6725599596041613185
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_5: -377314495222330943
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_6: -3861596129574525731
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_7: -5896752681833774092
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_8: 4418664330888878694
+      pngtree-flame-spark-spark-bomb-explosion-gunpowder-visual-effect-decorative-pattern-png-image_12298023_9: -320482277011011100
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

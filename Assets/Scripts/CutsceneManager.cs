@@ -15,7 +15,7 @@ public class CutsceneManager : MonoBehaviour
     public Vector3 newOverlayScale = Vector3.one;
 
     [Header("Nastavení Scény")]
-    public float fadeSpeed = 2.0f;
+    public float fadeSpeed = 1.0f; // Snížil jsem rychlost pro lepší testování (1.0 = 1 vteøina)
     public string nextSceneName = "NightScene1";
 
     private int currentIndex = 0;
@@ -28,26 +28,32 @@ public class CutsceneManager : MonoBehaviour
     {
         if (storyImages == null || storyImages.Length == 0 || blackOverlay == null) return;
 
-        // Uložíme si startovní pozici (mìla by být 0,0,0)
         initialPosition = blackOverlay.transform.localPosition;
         initialScale = blackOverlay.transform.localScale;
 
-        // Blackout musí být nad vším
         blackOverlay.sortingOrder = 999;
 
+        // Všechny obrázky vypnout, jen první zapnout
         for (int i = 0; i < storyImages.Length; i++)
         {
             storyImages[i].gameObject.SetActive(i == 0);
         }
 
-        SetOverlayAlpha(1);
+        // Zaèínáme z èerné
+        SetOverlayAlpha(1f);
         StartCoroutine(FadeFromBlack());
     }
 
     void Update()
     {
-        // Reaguje na jakoukoliv klávesu nebo myš
-        if ((Keyboard.current.anyKey.wasPressedThisFrame || Mouse.current.leftButton.wasPressedThisFrame) && !isTransitioning)
+        if (isTransitioning) return;
+
+        // Lepší kontrola vstupu
+        bool inputPressed = false;
+        if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame) inputPressed = true;
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) inputPressed = true;
+
+        if (inputPressed)
         {
             StartCoroutine(SwitchToNextStep());
         }
@@ -56,33 +62,31 @@ public class CutsceneManager : MonoBehaviour
     IEnumerator SwitchToNextStep()
     {
         isTransitioning = true;
-
         int nextIndex = currentIndex + 1;
 
-        // Pokud jdeme na poslední slide nebo za nìj, vrátíme panel na støed (0,0,0)
+        // --- 1. FÁZE: STMÍVÁNÍ (Do èerné) ---
+        float alpha = 0f;
+        while (alpha < 1f)
+        {
+            alpha += Time.deltaTime * fadeSpeed;
+            SetOverlayAlpha(alpha);
+            yield return null; // Èeká na další frame - TADY SE DÌJE TO POSTUPNÉ STMÍVÁNÍ
+        }
+        SetOverlayAlpha(1f);
+
+        // --- MEZIKROK: Zmìna pozice/mìøítka panelu ---
         if (nextIndex >= storyImages.Length)
         {
             blackOverlay.transform.localPosition = initialPosition;
             blackOverlay.transform.localScale = initialScale;
-            Debug.Log("<color=yellow>RESET: Panel vrácen na støed pro finální blackout.</color>");
         }
-        // Jinak pokud je to ten specifický index uprostøed, pohneme s ním
         else if (nextIndex == changeAfterIndex)
         {
             blackOverlay.transform.localPosition = newOverlayPosition;
             blackOverlay.transform.localScale = newOverlayScale;
         }
 
-        // 1. FÁZE: Stmívání
-        float alpha = 0f;
-        while (alpha < 1f)
-        {
-            alpha += Time.deltaTime * fadeSpeed;
-            SetOverlayAlpha(alpha);
-            yield return null;
-        }
-        SetOverlayAlpha(1f);
-
+        // Pøepnutí obrázkù (když je èerná obrazovka)
         storyImages[currentIndex].gameObject.SetActive(false);
         currentIndex++;
 
@@ -90,7 +94,7 @@ public class CutsceneManager : MonoBehaviour
         {
             storyImages[currentIndex].gameObject.SetActive(true);
 
-            // 2. FÁZE: Rozjasòování
+            // --- 2. FÁZE: ROZJASÒOVÁNÍ (Z èerné do obrazu) ---
             alpha = 1f;
             while (alpha > 0f)
             {
@@ -99,18 +103,23 @@ public class CutsceneManager : MonoBehaviour
                 yield return null;
             }
             SetOverlayAlpha(0f);
+
+            // Malá pauza, aby hráè nemohl hned prokliknout další slide
+            yield return new WaitForSeconds(0.2f);
             isTransitioning = false;
         }
         else
         {
-            // KONEC: Panel už je na 0,0,0 z kroku nahoøe, takže jen poèkáme a pøepneme scénu
-            yield return new WaitForSeconds(0.8f);
+            // KONEC CUTSCÉNY
+            Debug.Log("Konec cutscény, naèítám: " + nextSceneName);
+            yield return new WaitForSeconds(1.0f);
             SceneManager.LoadScene(nextSceneName);
         }
     }
 
     IEnumerator FadeFromBlack()
     {
+        isTransitioning = true; // Zablokuje klikání bìhem úvodního fade-inu
         float alpha = 1f;
         while (alpha > 0f)
         {
@@ -119,6 +128,7 @@ public class CutsceneManager : MonoBehaviour
             yield return null;
         }
         SetOverlayAlpha(0f);
+        isTransitioning = false;
     }
 
     void SetOverlayAlpha(float a)
@@ -126,7 +136,7 @@ public class CutsceneManager : MonoBehaviour
         if (blackOverlay != null)
         {
             Color c = blackOverlay.color;
-            c.a = Mathf.Clamp01(a);
+            c.a = a; // Clamp01 není nutný, pokud je fadeSpeed správnì
             blackOverlay.color = c;
         }
     }
