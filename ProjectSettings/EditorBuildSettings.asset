@@ -30,8 +30,17 @@ EditorBuildSettings:
     path: Assets/Nights/StoryxScene/Story4Scene.unity
     guid: a6eca533e234803429ce23bbe583aa19
   - enabled: 1
-    path: Assets/Nights/NightXScenes/Night4Scene.unity
+    path: Assets/Nights/NightXScenes/Night5Scene.unity
     guid: e3728d571a8b6914eb9f9f7e73e3ec78
+  - enabled: 1
+    path: Assets/Nights/StoryxScene/Story5Scene.unity
+    guid: e2e6ff119ebea2a41b85f85e4d710a4e
+  - enabled: 1
+    path: Assets/Nights/NightXScenes/Night4Scene.unity
+    guid: bd30c1bc13435a942b863f6d466f22e8
+  - enabled: 1
+    path: Assets/Story/ending1/Ending1Scene.unity
+    guid: 808d70eef6f75754ba133ea8dddf26c9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -600,7 +600,7 @@ RectTransform:
   m_GameObject: {fileID: 36852168}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10.394425, y: 1, z: 1}
+  m_LocalScale: {x: 2.9199927, y: 0.26560825, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 998023011}
@@ -608,7 +608,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.6054, y: -491.3925}
+  m_AnchoredPosition: {x: 0.6054, y: -214.2}
   m_SizeDelta: {x: 99.8835, y: 97.2151}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &36852170
@@ -5141,7 +5141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &997354788
 Transform:
   m_ObjectHideFlags: 0
@@ -5990,7 +5990,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df47b053e5540664baa5692f9a245733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Night3Manager
-  lengthOfNight: 4
+  lengthOfNight: 120
   hourObjects:
   - {fileID: 1757084009}
   - {fileID: 1864208687}
@@ -6000,6 +6000,7 @@ MonoBehaviour:
   backgroundMusic: {fileID: 1181031262}
   startPitch: 0.3
   maxPitch: 0.8
+  enemyScripts: []
   blackoutSprite: {fileID: 1983273437}
   cameraUIButton: {fileID: 1749711158}
   screenFader: {fileID: 1983273439}
@@ -6015,18 +6016,23 @@ MonoBehaviour:
   catTipObject: {fileID: 933027623}
   homuraTipObject: {fileID: 579965483}
   adaTipObject: {fileID: 0}
+  samTipObject: {fileID: 0}
   alexandra: {fileID: 1274536071}
   lin: {fileID: 1168159187}
   lan: {fileID: 1026995951}
   cat: {fileID: 421313606}
   homura: {fileID: 1218591994}
   santa: {fileID: 765113934}
+  ada: {fileID: 0}
+  sam: {fileID: 0}
   alexandraJumpscare: {fileID: 1751277830}
   linJumpscare: {fileID: 391360331}
   lanJumpscare: {fileID: 1643086162}
   catJumpscare: {fileID: 2073906529}
   homuraJumpscare: {fileID: 1389426881}
   santaJumpscare: {fileID: 1045414649}
+  adaJumpscare: {fileID: 0}
+  samJumpscare: {fileID: 0}
 --- !u!82 &1181031264
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8647,7 +8653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -10108,7 +10114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}

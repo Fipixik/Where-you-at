@@ -14,6 +14,9 @@ public abstract class BaseNightManager : MonoBehaviour
     public float startPitch = 1.0f;
     public float maxPitch = 1.5f;
 
+    [Header("--- NEPØÁTELÉ K VYPNUTÍ PØI VÝHØE ---")]
+    public MonoBehaviour[] enemyScripts;
+
     [Header("--- SYSTÉM SMRTI A VÝHRY ---")]
     public GameObject blackoutSprite;
     public GameObject cameraUIButton;
@@ -23,8 +26,7 @@ public abstract class BaseNightManager : MonoBehaviour
     [Header("--- WIN SETTINGS ---")]
     public AudioClip winSound;
     public GameObject winScreenObject;
-    // Výherní pozice (6 AM scéna)
-    private Vector3 winPos = new Vector3(-25f, 0f, -10f);
+    protected Vector3 winPos = new Vector3(-25f, 0f, -10f);
 
     [Header("--- JUMPSCARE AUDIO ---")]
     public AudioSource jumpscareSource;
@@ -38,7 +40,7 @@ public abstract class BaseNightManager : MonoBehaviour
     public GameObject catTipObject;
     public GameObject homuraTipObject;
     public GameObject adaTipObject;
-    public GameObject samTipObject; // NOVÉ: Tip pro Sama
+    public GameObject samTipObject;
 
     protected float timer = 0f;
     protected bool gameEnded = false;
@@ -62,7 +64,6 @@ public abstract class BaseNightManager : MonoBehaviour
 
     protected virtual void Update()
     {
-        // Návrat do menu po smrti kliknutím
         if (canClickToMenu && Mouse.current.leftButton.wasPressedThisFrame)
         {
             Time.timeScale = 1f;
@@ -71,23 +72,30 @@ public abstract class BaseNightManager : MonoBehaviour
 
         if (gameEnded) return;
 
-        // Èasovaè noci
         timer += Time.deltaTime;
         UpdateClockDisplay();
 
-        // Zvyšování pitch hudby podle èasu
         if (backgroundMusic != null && timer <= lengthOfNight)
         {
             float progress = timer / lengthOfNight;
             backgroundMusic.pitch = Mathf.Lerp(startPitch, maxPitch, progress);
         }
 
-        // Kontrola výhry (6 AM)
         if (timer >= lengthOfNight && !gameEnded)
         {
             gameEnded = true;
             StartCoroutine(WinSequence());
         }
+    }
+
+    protected void StopAllEnemies()
+    {
+        if (enemyScripts == null) return;
+        foreach (var script in enemyScripts)
+        {
+            if (script != null) script.enabled = false;
+        }
+        Debug.Log("Všichni nepøátelé zastaveni.");
     }
 
     private void UpdateClockDisplay()
@@ -111,15 +119,12 @@ public abstract class BaseNightManager : MonoBehaviour
         Time.timeScale = 0f;
         if (backgroundMusic != null) backgroundMusic.Stop();
 
-        // Jumpscare zvuk z manageru hraje jen pokud ho postava nespustila sama (napø. Santa nebo Lin)
-        // U Ady a Sama se pøedpokládá, že hraje jejich vlastní lokální zvuk
         if (killerName != "Ada" && killerName != "Sam")
         {
             if (jumpscareSource != null && jumpscareSound != null)
                 jumpscareSource.PlayOneShot(jumpscareSound);
         }
 
-        // Vypnutí UI
         if (cameraUIButton != null) cameraUIButton.SetActive(false);
         if (cameraManager != null && cameraManager.cameraDisplayPanel != null)
             cameraManager.cameraDisplayPanel.SetActive(false);
@@ -161,8 +166,6 @@ public abstract class BaseNightManager : MonoBehaviour
     protected virtual void ShowTipObject(string killer)
     {
         HideAllTips();
-
-        // Aktivace správného tipu podle jména zabijáka
         switch (killer)
         {
             case "Alexandra": alexandraTipObject?.SetActive(true); break;
@@ -176,8 +179,9 @@ public abstract class BaseNightManager : MonoBehaviour
         }
     }
 
-    public IEnumerator WinSequence()
+    protected virtual IEnumerator WinSequence()
     {
+        StopAllEnemies();
         if (backgroundMusic != null) backgroundMusic.Stop();
 
         if (cameraManager != null)
@@ -190,7 +194,6 @@ public abstract class BaseNightManager : MonoBehaviour
         Camera mainCam = Camera.main;
         if (mainCam != null)
         {
-            // VYPNUTÍ SKRIPTU PRO POHYB
             var movement = mainCam.GetComponent("CameraFollowCursor") as MonoBehaviour;
             if (movement != null) movement.enabled = false;
 
@@ -201,11 +204,16 @@ public abstract class BaseNightManager : MonoBehaviour
         if (jumpscareSource != null && winSound != null) jumpscareSource.PlayOneShot(winSound);
         if (winScreenObject != null) winScreenObject.SetActive(true);
 
-        // Save Progress
-        int alreadySaved = PlayerPrefs.GetInt("SavedNight", 1);
-        // Tady by bylo fajn mít promìnnou currentNight, abychom vìdìli co odemknout
-        PlayerPrefs.SetInt("SavedNight", Mathf.Max(alreadySaved, 2));
+        // --- OPRAVENÁ LOGIKA UKLÁDÁNÍ ---
+        // Naèteme aktuální noc (default 1)
+        int currentNight = PlayerPrefs.GetInt("CurrentNight", 1);
+
+        // Uložíme další noc (napø. po dohrání Night1 se uloží 2)
+        PlayerPrefs.SetInt("CurrentNight", currentNight + 1);
         PlayerPrefs.Save();
+
+        Debug.Log("Noc úspìšnì uložena. Pøíští noc bude: " + (currentNight + 1));
+        // --------------------------------
 
         yield return new WaitForSeconds(5.0f);
 

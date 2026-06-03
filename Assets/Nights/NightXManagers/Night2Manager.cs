@@ -27,29 +27,29 @@ public class Night2Manager : BaseNightManager
         if (alexandra != null)
         {
             alexandra.moveChance = 30;
-            alexandra.moveInterval = 1.5f;
+            alexandra.moveInterval = 2f;
         }
 
         // Lin (Začíná být aktivnější)
         if (lin != null)
         {
-            lin.moveChance = 25;
-            lin.moveInterval = 2.0f;
+            lin.moveChance = 100;
+            lin.moveInterval = 5.0f;
         }
 
         // Lan (Nováček - střední obtížnost)
         if (lan != null)
         {
             lan.moveChance = 100;
-            lan.moveInterval = 5.0f;
+            lan.moveInterval = 3.0f;
         }
 
         // Evil Santa (ThiefScript - používáme jeho proměnné)
         if (santa != null)
         {
             // ThiefScript používá 'spawnChance' a 'spawnInterval'
-            santa.spawnChance = 15;
-            santa.spawnInterval = 3.0f;
+            santa.spawnChance = 25;
+            santa.spawnInterval = 5.0f;
         }
 
         // 3. Pro jistotu vypneme všechny jumpscary na startu

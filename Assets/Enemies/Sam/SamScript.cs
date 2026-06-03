@@ -17,6 +17,8 @@ public class SamScript : MonoBehaviour
     public float checkInterval = 10f;
     [Range(0, 100)] public float appearanceChance = 20f;
     public float timeToFind = 15f;
+    public float moveChance;
+    public float moveInterval;
 
     [Header("Vizuály Sama")]
     public GameObject samSpriteObject;

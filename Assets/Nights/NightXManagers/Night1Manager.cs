@@ -18,15 +18,15 @@ public class Night1Manager : BaseNightManager
         // 2. ALEXANDRA (Agresivní)
         if (alexandra != null)
         {
-            alexandra.moveChance = 40;     // Chodí často
-            alexandra.moveInterval = 1.5f; // Rychlé intervaly
+            alexandra.moveChance = 30;     // Chodí často
+            alexandra.moveInterval = 2f; // Rychlé intervaly
         }
 
         // 3. LIN (Pasivní / Méně aktivní)
         if (lin != null)
         {
-            lin.moveChance = 35;      // Chodí málo
-            lin.moveInterval = 3.0f;  // Pomalé intervaly
+            lin.moveChance = 100;      // Chodí málo
+            lin.moveInterval = 4.0f;  // Pomalé intervaly
         }
 
         // 4. Vypnutí jumpscarů na startu (pro jistotu)

@@ -6,7 +6,8 @@ public class AdaScript : MonoBehaviour
     [Header("Nastavení šancí a času")]
     [Range(0, 100)] public float appearanceChance = 30f;
     public float timeToReact = 2.0f;
-
+    public float moveChance;
+    public float moveInterval;
     [Header("Místa výskytu")]
     public GameObject[] spawnLocations;
 

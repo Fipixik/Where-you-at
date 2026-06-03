@@ -16,10 +16,10 @@ public class CameraTeleportZone : MonoBehaviour
 
     private void Start()
     {
-        // Kontrola hned po spuštìní hry
+        // ODSTRANÌN Debug.LogError - teï už to nebude házet èervenou chybu, když je Ada prázdná.
         if (adaScript == null)
         {
-            Debug.LogError($"<color=red>Chyba na objektu {gameObject.name}: Nemáš pøiøazenou Adu v políèku Ada Script!</color>");
+            Debug.Log($"<color=cyan>Info na {gameObject.name}: Ada Script není pøiøazen (to je OK, pokud v této noci Ada není).</color>");
         }
 
         if (mainCameraTransform != null)
@@ -67,7 +67,9 @@ public class CameraTeleportZone : MonoBehaviour
         {
             // Jdeme DOZADU (Pozice 2)
             mainCameraTransform.position = new Vector3(0f, 12f, mainCameraTransform.position.z);
-            Debug.Log("<color=orange>ZONE: Kamera pøepnuta na Y=12 (DOZADU). Posílám info Adì.</color>");
+            Debug.Log("<color=orange>ZONE: Kamera pøepnuta na Y=12 (DOZADU).</color>");
+
+            // Voláme Adu jen když existuje
             if (adaScript != null) adaScript.OnPlayerMoved(true);
         }
         else
@@ -75,7 +77,9 @@ public class CameraTeleportZone : MonoBehaviour
             // Jdeme DOPØEDU (Pozice 1)
             mainCameraTransform.position = new Vector3(0f, 0f, mainCameraTransform.position.z);
             if (objectToToggle != null) objectToToggle.SetActive(true);
-            Debug.Log("<color=green>ZONE: Kamera pøepnuta na Y=0 (DOPØEDU). Posílám info Adì.</color>");
+            Debug.Log("<color=green>ZONE: Kamera pøepnuta na Y=0 (DOPØEDU).</color>");
+
+            // Voláme Adu jen když existuje
             if (adaScript != null) adaScript.OnPlayerMoved(false);
         }
 
